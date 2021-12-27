@@ -1,0 +1,175 @@
+#+TITLE: Shapeless Blog
+
+Shapeless-blog is a minimalistic blogging tool written in Go.
+
+It uses a RESTful api for CRUD actions, provides basic token based
+authentication.
+
+All blog posts are server rendered which no JavaScripts is involved.
+
+* Dependencies
+- Go
+
+* Installation
+Make sure you have ~go~ installed in your machine.
+#+begin_src shell
+  git clone https://github.com/drshapeless/shapeless-blog.git
+  cd shapeless-blog
+  make
+  sudo make install
+#+end_src
+
+* Usage
+Show options.
+#+begin_src shell
+  slblog -h
+#+end_src
+
+There are only three options.
+#+begin_example
+Usage of slblog:
+  -basedir string
+        Base directory of data (default "/home/user/slblog")
+  -create
+        Create new user interactively.
+  -port int
+        Port of shapeless blog (default 9398)
+  -setup
+      Create necessary files.
+#+end_example
+
+Create necessary files and directories for storing blog data.
+#+begin_src shell
+  slblog -setup
+#+end_src
+
+Create a new user.
+#+begin_src shell
+  slblog -create
+#+end_src
+
+Remember your username and password.
+
+Run slblog.
+#+begin_src shell
+  slblog
+#+end_src
+
+By default, slblog runs on port 9398. (I smashed my face into keyboard
+to get this magical number.)
+
+* Nginx
+We can use Nginx to reverse proxy to this application. Here is an example.
+#+begin_src nginx
+  server {
+    server_name blog.drshapeless.com;
+
+    location / {
+      proxy_pass http://127.0.0.1:9398/;
+    }
+  }
+#+end_src
+
+* Run as daemon
+slblog relies on the init system to run as daemon. But since I use
+OpenRC instead of systemd, only OpenRC sample script is
+provided. [[slblog.init][sample init script]]
+
+Remember to change the basedir before using.
+
+Install the init script.
+#+begin_src shell
+  cp slblog.init /etc/init.d/slblog
+  chmod +x /etc/init.d/slblog
+#+end_src
+
+In OpenRC.
+#+begin_src shell
+  rc-service slblog start
+  rc-service slblog stop
+#+end_src
+
+* Data structure
+Every blog post consists of two parts, the metadata and the
+content. The content should be the body of the HTML, while the
+metadata stores the blog title, created time, updated time, post id
+and categories.
+
+Everything is in plaintext. But I do not recommend any direct editing
+unless you know what you are doing.
+
+* Template system
+There is only four views in the blog. Home page, blog view, categories
+list, category view.
+
+There is no other extensions since all the things are hard coded.
+
+I personally favour this approach as the biggest problem of the
+blogging solutions outside is overly generic. Always ships with tons of
+unused functions.
+
+Simplicity comes at a cost. We can only display a very limited things
+on to the page.
+
+slblog use the built-in template system in Go, which is simple to use.
+
+In home page and category view, it will loop through the post metadata
+in reverse chronological order.
+
+Please check the [[.templates/][templates]] for sample template usage. You may also
+have a brief look on my blog to see what it can do. [[https://blog.drshapeless.com][drshapeless blog]]
+
+The home page is generated per request, slblog take care of all the
+indexing. But you cannot customize the order, or have paging and
+preview. It only displays the date, and a link to the blog post. This
+is certainly enough for leisure blogging.
+
+The blog view displays the blog content. You can choose what metadata to
+display via the template system. Thats it, no fancy comment section,
+view counts or upvotes.
+
+The categories list is just a list of categories, which provides a way
+for readers to read blog post according to their interested topics.
+
+The category view is a page displaying all the post in the same
+category. You can choose what metadata to display via the template
+system.
+
+There are five metadata, all start with capital letter.
+| Name       | Description              |
+|------------+--------------------------|
+| Title      | blog title string        |
+| ID         | blog id                  |
+| Created    | create time              |
+| Updated    | update time              |
+| Categories | array of category string |
+
+The templates should be store in the basedir of slblog, which default
+to ~~/slblog/templates~. After setup, you may see four empty files
+with their default name. Do not change the file name or slblog will
+not find the template.
+
+* Blogging
+We sent a json request to the server to create and edit blog.
+
+For the actual json api, please refer to the [[api.org][api]].
+
+For the HTML part, here is the table for all the routing.
+| address              | content         |
+|----------------------+-----------------|
+| "url/"               | home page       |
+| "url/post/:id"       | blog view       |
+| "url/category/"      | categories list |
+| "url/category/:name" | category view   |
+
+For example, the home page of my blog is
+https://blog.drshapeless.com/.
+
+The first post would be at https://blog.drshapeless.com/post/1.
+
+The categories list is https://blog.drshapeless.com/category/.
+
+For the Emacs category,
+https://blog.drshapeless.com/category/emacs. (Be careful, the category
+is case sensitive, "emacs" and "Emacs" are treated as two different
+objects.)

@@ -1,0 +1,122 @@
+#+TITLE: API
+
+This is the api for shapeless-blog.
+
+| url                       | method | action             |
+|---------------------------+--------+--------------------|
+| "/api/v1/authentication/" | POST   | get a token        |
+| "/api/v1/post/"           | POST   | create a new post  |
+| "/api/v1/post/:id"        | GET    | get post with :id  |
+| "/api/v1/post/:id"        | PATCH  | update an old post |
+| "/api/v1/post/:id"        | DELETE | delete an old post |
+
+* Get your token.
+json body.
+#+begin_src js
+  {
+    "username":"smartuser",
+    "password":"smartpass"
+  }
+#+end_src
+
+cURL example.
+#+begin_src shell
+  BODY='{"username":"smartuser","password":"smartpass"}'
+  curl -d $BODY 'https://mydomain.com/api/v1/authentication/'
+#+end_src
+
+If authenticated, the server will return a token in this format. The
+token is necessary for every use in the API, including the GET method.
+#+begin_src js
+  {
+    "token":"randomtokenstring"
+  }
+#+end_src
+
+* Create new post
+#+begin_src js
+  {
+    "title":"First Post",
+    "Created":"2021-12-25 12:00",
+    "Updated":"2021-12-25 12:00",
+    "Category":["github","blog"],
+    "Content":"A meaningful blog."
+  }
+#+end_src
+
+cURL example.
+#+begin_src shell
+  BODY=  {"title":"First Post","Created":"2021-12-25 12:00","Updated":"2021-12-25 12:00","Category":["github","blog"],"Content":"A meaningful blog."}
+
+  curl -H "Authorization: Bearer <token>" -d $BODY 'https://mydomain.com/api/v1/post/'
+#+end_src
+
+If success, the server will return the post id.
+#+begin_src js
+  {
+    "id":1
+  }
+#+end_src
+
+* Update old post
+#+begin_src js
+  {
+    "id":1,
+    "title":"First Post revised",
+    "Created":"2021-12-25 12:00",
+    "Updated":"2021-12-26 18:30",
+    "Category":["github","blog"],
+    "Content":"A meaningful blog and more."
+  }
+#+end_src
+
+cURL example.
+#+begin_src shell
+  BODY=  {"id":1,"title":"First Post revised","Created":"2021-12-25 12:00","Updated":"2021-12-26 18:30","Category":["github","blog"],"Content":"A meaningful blog and more."}
+  curl -H "Authorization: Bearer <token>" -X PATCH -d $BODY 'https://mydomain.com/api/v1/post/1'
+#+end_src
+
+If success, the server will return the post id.
+
+* Delete post
+cURL.
+#+begin_src shell
+  curl -H "Authorization: Bearer <token>" -X DELETE 'https://mydomain.com/api/v1/post/1'
+#+end_src
+
+* Get post
+This method has almost no use, but still good to have.
+
+To avoid abuse, this method still requires authorization token.
+#+begin_src shell
+  curl -H "Authorization: Bearer <token>" 'https://mydomain.com/api/v1/post/1'
+#+end_src
+
+If success, you will get this.
+#+begin_src js
+  {
+  "blogpost": {
+    "metadata": {
+      "id": 1,
+      "title": "First Post",
+      "created": "2021-12-25 12:00",
+      "updated": "2021-12-25 12:00",
+      "category": [
+        "github",
+        "blog"
+      ]
+    },
+    "content": "A meaningful blog."
+  }
+}
+#+end_src
+
+* P.S.
+The content should normally be the body part of the HTML file, but for
+demonstration, I use plain string.
+
+There is no client available except for an Emacs package, which I
+wrote along with the creation of slblog.
+
+* Emacs client
+Check out [[https://github.com/drshapeless/emacs-shapeless-blog][emacs-shapeless-blog]].
