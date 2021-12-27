@@ -207,6 +207,9 @@ func (app *application) writeCategories() error {
 	defer file.Close()
 
 	for _, value := range app.cache.Categories {
+		if value == "" {
+			continue
+		}
 		_, err = file.WriteString(fmt.Sprintf("%s\n", value))
 		if err != nil {
 			return err

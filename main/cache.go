@@ -18,6 +18,9 @@ func (app *application) addToPostsCache(id int) {
 
 func (app *application) addToCategoriesCache(cats []string) {
 	for _, n := range cats {
+		if n == "" {
+			continue
+		}
 		p := true
 		for _, o := range app.cache.Categories {
 			if o == n {
@@ -56,7 +59,9 @@ func (app *application) loadCategoriesCache() error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		s := scanner.Text()
-		temp = append(temp, s)
+		if s != "" {
+			temp = append(temp, s)
+		}
 	}
 
 	app.cache.Categories = temp
