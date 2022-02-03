@@ -2,8 +2,10 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"flag"
 	"log"
+	"os"
 
 	"github.com/drshapeless/shapeless-blog/internal/data"
 
@@ -13,6 +15,10 @@ import (
 type config struct {
 	port int
 	path string
+}
+
+type application struct {
+	models data.Models
 }
 
 func main() {
@@ -33,6 +39,20 @@ func main() {
 		return
 	}
 
+	if !exists(cfg.path) {
+		log.Printf("Datbase not found at %s", cfg.path)
+		log.Printf("Please use -install to install database first.")
+		return
+	}
+
+	db, err := openDB(cfg.path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var app application
+	app.models = data.NewModels(db)
+
 }
 
 func openDB(path string) (*sql.DB, error) {
@@ -42,4 +62,9 @@ func openDB(path string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return !errors.Is(err, os.ErrNotExist)
 }
