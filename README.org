@@ -5,13 +5,16 @@ Shapeless-blog is a minimalistic blogging tool written in Go.
 It uses a RESTful api for CRUD actions, provides basic token based
 authentication.
 
-All blog posts are server rendered which no JavaScripts is involved.
+All blog posts are server rendered which no JavaScript is involved.
+
+Using a homemade data structure instead of SQL was a BIG mistake.
 
 * Dependencies
 - Go
+- sqlite3
 
 * Installation
-Make sure you have ~go~ installed in your machine.
+Make sure you have ~go~ and ~sqlite~ installed in your machine.
 #+begin_src shell
   git clone https://github.com/drshapeless/shapeless-blog.git
   cd shapeless-blog
