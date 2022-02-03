@@ -1,8 +1,8 @@
 build :
-	go build -o ./bin/slblog ./main
+	go build -o ./bin/slblog ./cmd/slblog
 
 run :
 	go run ./main/
 
 install :
-	cp slblog /usr/local/bin
+	cp ./bin/slblog /usr/local/bin
