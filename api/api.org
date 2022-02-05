@@ -4,11 +4,11 @@ This is the api for shapeless-blog.
 
 | url                       | method | action             |
 |---------------------------+--------+--------------------|
-| "/api/v1/authentication/" | POST   | get a token        |
-| "/api/v1/post/"           | POST   | create a new post  |
-| "/api/v1/post/:id"        | GET    | get post with :id  |
-| "/api/v1/post/:id"        | PATCH  | update an old post |
-| "/api/v1/post/:id"        | DELETE | delete an old post |
+| "api/v1/authentication/"  | POST   | get a token        |
+| "api/v1/post/"            | POST   | create a new post  |
+| "api/v1/post/:id"         | GET    | get post with :id  |
+| "api/v1/post/:id"         | PATCH  | update an old post |
+| "api/v1/post/:id"         | DELETE | delete an old post |
 
 * Get your token.
 json body.

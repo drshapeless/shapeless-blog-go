@@ -4,11 +4,13 @@ import "database/sql"
 
 type Models struct {
 	Posts PostModel
+	Tags  TagModel
 }
 
 func NewModels(db *sql.DB) Models {
 	return Models{
 		Posts: PostModel{DB: db},
+		Tags:  TagModel{DB: db},
 	}
 }
 

@@ -18,6 +18,7 @@ type config struct {
 }
 
 type application struct {
+	config config
 	models data.Models
 }
 
@@ -52,7 +53,9 @@ func main() {
 
 	var app application
 	app.models = data.NewModels(db)
+	app.config = cfg
 
+	app.serve()
 }
 
 func openDB(path string) (*sql.DB, error) {
