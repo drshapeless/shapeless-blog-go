@@ -17,7 +17,7 @@ type TagModel struct {
 
 func (m *TagModel) Insert(t *Tag) error {
 	query := `
-INSERT INTO tags(name, post_id)
+INSERT INTO tags (name, post_id)
 VALUES (?, ?)
 RETURNING version`
 

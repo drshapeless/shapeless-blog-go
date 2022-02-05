@@ -23,7 +23,7 @@ type PostModel struct {
 
 func (m *PostModel) Insert(p *Post) error {
 	query := `
-INSERT INTO posts(title, content, tags, created_at, updated_at)
+INSERT INTO posts (title, content, tags, created_at, updated_at)
 VAULES (?, ?, ?, ?, ?)
 RETURNING id, version`
 
