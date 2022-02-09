@@ -3,14 +3,18 @@ package data
 import "database/sql"
 
 type Models struct {
-	Posts PostModel
-	Tags  TagModel
+	Posts  PostModel
+	Tags   TagModel
+	Users  UserModel
+	Tokens TokenModel
 }
 
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Posts: PostModel{DB: db},
-		Tags:  TagModel{DB: db},
+		Posts:  PostModel{DB: db},
+		Tags:   TagModel{DB: db},
+		Users:  UserModel{DB: db},
+		Tokens: TokenModel{DB: db},
 	}
 }
 
@@ -25,9 +29,22 @@ created_at TEXT NOT NULL,
 updated_at TEXT NOT NULL,
 version INTEGER DEFAULT 1
 );
+
 CREATE TABLE IF NOT EXISTS tags(
 name TEXT NOT NULL UNIQUE,
 post_id TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users(
+id INTEGER PRIMARY KEY,
+username TEXT UNIQUE,
+password_hash BLOB NOT NULL,
+version INTEGER DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS tokens(
+hash BLOB NOT NULL PRIMARY KEY,
+user_id INTEGER NOT NULL
 );
 `
 

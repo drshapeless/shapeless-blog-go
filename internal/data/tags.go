@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 type Tag struct {
@@ -78,6 +79,16 @@ WHERE name = ? AND version = ?`
 	return nil
 }
 
+func (m *TagModel) AddPostID(id int64, tag string) error {
+	t, err := m.Get(tag)
+	if err != nil {
+		return err
+	}
+
+	t.PostID += fmt.Sprintf(",%d", id)
+	return m.Update(t)
+}
+
 func (m *TagModel) Delete(name string) error {
 	if name == "" {
 		return ErrRecordNotFound
@@ -102,4 +113,19 @@ WHERE name = ?`
 	}
 
 	return nil
+}
+
+func (m *TagModel) IsExist(tag string) bool {
+	query := `
+SELECT FROM tags
+WHERE name = ?`
+
+	// This t is dummy.
+	var t string
+	err := m.DB.QueryRow(query, tag).Scan(&t)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false
+	} else {
+		return true
+	}
 }

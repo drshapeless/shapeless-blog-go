@@ -3,18 +3,18 @@ package data
 import (
 	"database/sql"
 	"errors"
-	"time"
 )
 
 // Since there is no array in SQLite, we store the csv value instead.
+// Also, there is no time.
 type Post struct {
-	ID        int64     `json:"id"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	Tags      string    `json:"tags"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Version   int       `json:"-"`
+	ID        int64  `json:"id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Tags      string `json:"tags"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	Version   int    `json:"-"`
 }
 
 type PostModel struct {

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"errors"
 
@@ -8,6 +9,7 @@ import (
 )
 
 type User struct {
+	ID       int64    `json:"id"`
 	Username string   `json:"username"`
 	Password password `json:"-"`
 	Version  int64    `json:"-"`
@@ -44,7 +46,7 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 	return true, nil
 }
 
-// This is a good to have feature, but very useless.
+// This is a good-to-have feature, but very useless.
 // There is no point in creating users for a personal blog.
 // I am the only user.
 type UserModel struct {
@@ -68,12 +70,17 @@ RETURNING version`
 
 func (m UserModel) Get(name string) (*User, error) {
 	query := `
-SELECT username, password_hash, version
+SELECT id, username, password_hash, version
 FROM users
 WHERE username = ?`
 
 	var u User
-	err := m.DB.QueryRow(query, name).Scan(&u.Username, &u.Password.hash, &u.Version)
+	err := m.DB.QueryRow(query, name).Scan(
+		&u.ID,
+		&u.Username,
+		&u.Password.hash,
+		&u.Version,
+	)
 
 	if err != nil {
 		switch {
@@ -105,4 +112,35 @@ RETURNING version`
 	}
 
 	return nil
+}
+
+func (m UserModel) GetForToken(tokenPlaintext string) (*User, error) {
+	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
+
+	query := `
+SELECT users.id, users.username, users.password, users.version
+FROM users
+INNER JOIN tokens
+ON users.id = tokens.user_id
+WHERE tokens.hash = ?`
+
+	var user User
+
+	err := m.DB.QueryRow(query, tokenHash[:]).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
 }
