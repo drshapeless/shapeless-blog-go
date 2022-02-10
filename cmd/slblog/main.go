@@ -41,7 +41,7 @@ func main() {
 	}
 
 	if !exists(cfg.path) {
-		log.Printf("Datbase not found at %s", cfg.path)
+		log.Printf("Database not found at %s", cfg.path)
 		log.Printf("Please use -install to install database first.")
 		return
 	}

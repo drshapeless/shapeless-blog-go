@@ -113,23 +113,35 @@ func csv2slice(c string) []string {
 	return strings.Split(c, ",")
 }
 
-func remove(s1, s2 []string) []string {
-	for _, v := range s2 {
-
+// This is a stupidly inefficient function.
+func remove1(ss []string, s string) []string {
+	for i, v := range ss {
+		if v == s {
+			return append(ss[:i], ss[i+1:]...)
+		}
 	}
+	return ss
 }
 
-func newAndRemove(c1, c2 string) ([]string, []string) {
-	var same []string
-	s1 := csv2slice(c1)
-	s2 := csv2slice(c2)
+func remove(s1, s2 []string) []string {
+	ss := s1
+	for _, v := range s2 {
+		ss = remove1(ss, v)
+	}
+	return ss
+}
 
-	for _, v1 := range s1 {
-		for _, v2 := range s2 {
+func newAndRemove(s0, s1 []string) ([]string, []string) {
+	// s1 is old, s2 is new.
+	var same []string
+
+	for _, v1 := range s0 {
+		for _, v2 := range s1 {
 			if v1 == v2 {
 				same = append(same, v1)
 			}
 		}
 	}
 
+	return remove(s1, same), remove(s0, same)
 }
