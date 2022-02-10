@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -24,10 +25,11 @@ type application struct {
 
 func main() {
 	var cfg config
-	flag.StringVar(&cfg.path, "path", "slblog.db", "Path to sqlite datebase")
-	flag.IntVar(&cfg.port, "port", 8393, "slblog port")
+	flag.StringVar(&cfg.path, "database", "slblog.db", "Path to sqlite datebase")
+	flag.IntVar(&cfg.port, "port", 9398, "slblog port")
 
 	install := flag.Bool("install", false, "Install slblog database")
+	setuser := flag.Bool("setuser", false, "Set up user")
 	flag.Parse()
 
 	if *install {
@@ -54,6 +56,24 @@ func main() {
 	var app application
 	app.models = data.NewModels(db)
 	app.config = cfg
+
+	if *setuser {
+		var user data.User
+
+		fmt.Printf("Username: ")
+		fmt.Scanf("%s", &user.Username)
+		fmt.Printf("Password: ")
+		var password string
+		fmt.Scanf("%s", &password)
+		user.Password.Set(password)
+
+		err := app.models.Users.Insert(&user)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Successfully created user.")
+		return
+	}
 
 	app.serve()
 }
