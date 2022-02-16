@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"sort"
 
@@ -115,6 +116,7 @@ func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request
 
 	// Every update request must contain all the information.
 	// That's how the Emacs client works.
+	// Should be using the PUT method, but whatever.
 	var input struct {
 		Title     string   `json:"title"`
 		Content   string   `json:"content"`
@@ -238,4 +240,44 @@ func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
+}
+
+func (app *application) showPostHTMLHandler(w http.ResponseWriter, r *http.Request) {
+	// At the moment, all error will be sent in a JSON form.
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	post, err := app.models.Posts.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	t, err := app.models.Templates.Get("showpost")
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	tmpl, err := template.ParseGlob(t.Content)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// No buffer here, if error, fuck that.
+	tmpl.Execute(w, post)
 }

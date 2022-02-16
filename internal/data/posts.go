@@ -66,6 +66,50 @@ WHERE id = ?`
 	return &p, nil
 }
 
+func (m PostModel) GetAll(filters Filters) ([]*Post, Metadata, error) {
+	query := `
+SELECT count(*) OVER(), id, title, content, tags, created_at, updated_at, version
+FROM posts
+LIMIT ? OFFSET ?`
+
+	rows, err := m.DB.Query(query, filters.limit(), filters.offset())
+	if err != nil {
+		return nil, Metadata{}, err
+	}
+
+	defer rows.Close()
+
+	totalRecords := 0
+	posts := []*Post{}
+
+	for rows.Next() {
+		var p Post
+		err := rows.Scan(
+			&totalRecords,
+			&p.ID,
+			&p.Title,
+			&p.Content,
+			&p.Tags,
+			&p.CreatedAt,
+			&p.UpdatedAt,
+			&p.Version,
+		)
+
+		if err != nil {
+			return nil, Metadata{}, err
+		}
+		posts = append(posts, &p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, Metadata{}, err
+	}
+
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	return posts, metadata, nil
+}
+
 func (m PostModel) GetTag(id int64) (string, error) {
 	query := `
 SELECT tags

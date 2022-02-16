@@ -23,6 +23,16 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 	return id, nil
 }
 
+func (app *application) readNameParam(r *http.Request) (string, error) {
+	s := chi.URLParam(r, "name")
+
+	if s == "" {
+		return "", errors.New("empty name parameter")
+	}
+
+	return s, nil
+}
+
 type envelope map[string]interface{}
 
 func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
@@ -144,4 +154,8 @@ func newAndRemove(s0, s1 []string) ([]string, []string) {
 	}
 
 	return remove(s1, same), remove(s0, same)
+}
+
+func (app *application) render(w http.ResponseWriter, r *http.Request, name string) {
+
 }

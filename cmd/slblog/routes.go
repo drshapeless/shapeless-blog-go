@@ -21,7 +21,17 @@ func (app *application) routes() http.Handler {
 			r.Patch("/:id", app.updatePostHandler)
 			r.Delete("/:id", app.deletePostHandler)
 		})
+
+		r.Route("/templates", func(r chi.Router) {
+			r.Use(app.authenticate)
+			r.Post("/", app.createTemplateHandler)
+			r.Get("/:name", app.showTemplateHandler)
+			r.Patch("/:name", app.updateTemplateHandler)
+			r.Delete("/:name", app.deleteTemplateHandler)
+		})
 	})
+
+	r.Get("/posts/:id", app.showPostHTMLHandler)
 
 	return r
 }
