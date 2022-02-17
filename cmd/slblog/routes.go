@@ -31,7 +31,8 @@ func (app *application) routes() http.Handler {
 		})
 	})
 
-	r.Get("/posts/:id", app.showPostHTMLHandler)
+	r.Get("/", app.showHomeHTMLHandler)
+	r.Get("/p/:id", app.showPostHTMLHandler)
 
 	return r
 }

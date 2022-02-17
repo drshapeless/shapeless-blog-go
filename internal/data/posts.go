@@ -3,6 +3,8 @@ package data
 import (
 	"database/sql"
 	"errors"
+
+	"github.com/pelletier/go-toml/query"
 )
 
 // Since there is no array in SQLite, we store the csv value instead.
@@ -64,6 +66,10 @@ WHERE id = ?`
 	}
 
 	return &p, nil
+}
+
+func (m PostModel) GetLatest() ([]*Post, Metadata, error) {
+	query := ``
 }
 
 func (m PostModel) GetAll(filters Filters) ([]*Post, Metadata, error) {
