@@ -2,130 +2,119 @@ package data
 
 import (
 	"database/sql"
-	"errors"
-	"fmt"
 )
 
 type Tag struct {
-	Name    string `json:"name"`
-	PostID  string `json:"post_id"`
-	Version int64  `json:"-"`
+	PostID int64  `json:"post_id"`
+	Tag    string `json:"tag"`
 }
 
 type TagModel struct {
 	DB *sql.DB
 }
 
-func (m *TagModel) Insert(t *Tag) error {
+func (m *TagModel) GetAllDistinctTags() ([]string, error) {
 	query := `
-INSERT INTO tags (name, post_id)
-VALUES (?, ?)
-RETURNING version`
+SELECT DISTINCT tag
+FROM tags
+ORDER BY tag ASC
+`
 
-	return m.DB.QueryRow(query, t.Name, t.PostID).Scan(&t.Version)
-}
-
-func (m *TagModel) Get(name string) (*Tag, error) {
-	if name == "" {
-		return nil, ErrRecordNotFound
+	rows, err := m.DB.Query(query)
+	if err != nil {
+		return nil, err
 	}
 
-	query := `
-SELECT name, post_id, version
-FROM tags
-WHERE name = ?`
+	defer rows.Close()
 
-	var t Tag
-
-	err := m.DB.QueryRow(query, name).Scan(
-		&t.Name,
-		&t.PostID,
-		&t.Version,
-	)
-
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
+	var tags []string
+	for rows.Next() {
+		var tag string
+		err := rows.Scan(&tag)
+		if err != nil {
 			return nil, err
 		}
+		tags = append(tags, tag)
 	}
 
-	return &t, nil
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
 }
 
-func (m *TagModel) Update(t *Tag) error {
+func (m *TagModel) GetPostsWithTag(tag string) ([]*Post, error) {
 	query := `
-UPDATE tags
-SET post_id = ?, version = version + 1
-WHERE name = ? AND version = ?`
+SELECT posts.id, posts.title, posts.filename, posts.created, posts.updated
+FROM posts
+INNER JOIN tags
+ON posts.id = tags.post_id
+WHERE tags.tag = ?
+ORDER BY posts.id DESC`
 
-	args := []interface{}{
-		t.PostID,
-		t.Name,
-		t.Version,
+	rows, err := m.DB.Query(query, tag)
+	if err != nil {
+		return nil, err
 	}
 
-	err := m.DB.QueryRow(query, args...).Scan(&t.Version)
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return ErrEditConflict
-		default:
-			return err
+	defer rows.Close()
+
+	var posts []*Post
+
+	for rows.Next() {
+		var post Post
+		err = rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Filename,
+			&post.Created,
+			&post.Updated,
+		)
+
+		if err != nil {
+			return nil, err
 		}
+
+		posts = append(posts, &post)
 	}
-	return nil
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, err
 }
 
-func (m *TagModel) AddPostID(id int64, tag string) error {
-	t, err := m.Get(tag)
-	if err != nil {
-		return err
-	}
-
-	t.PostID += fmt.Sprintf(",%d", id)
-	return m.Update(t)
-}
-
-func (m *TagModel) Delete(name string) error {
-	if name == "" {
-		return ErrRecordNotFound
-	}
-
+func (m *TagModel) GetTagsWithPost(post *Post) ([]string, error) {
 	query := `
-DELETE FROM tags
-WHERE name = ?`
+SELECT tag
+FROM tags
+WHERE post_id = ?
+`
 
-	result, err := m.DB.Exec(query, name)
+	rows, err := m.DB.Query(query, post.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err
+	defer rows.Close()
+
+	var tags []string
+
+	for rows.Next() {
+		var tag string
+		err = rows.Scan(&tag)
+		if err != nil {
+			return nil, err
+		}
+
+		tags = append(tags, tag)
 	}
 
-	if rowsAffected == 0 {
-		return ErrRecordNotFound
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
-	return nil
-}
-
-func (m *TagModel) IsExist(tag string) bool {
-	query := `
-SELECT FROM tags
-WHERE name = ?`
-
-	// This t is dummy.
-	var t string
-	err := m.DB.QueryRow(query, tag).Scan(&t)
-	if errors.Is(err, sql.ErrNoRows) {
-		return false
-	} else {
-		return true
-	}
+	return tags, err
 }

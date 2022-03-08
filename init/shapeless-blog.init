@@ -1,0 +1,7 @@
+#!/bin/openrc-run
+# By drshapeless, drsl AT drshapeless DOT com
+
+supervisor=supervise-daemon
+SHAPELESS_BLOG_DIR="/home/jacky/shapeless-blog"
+command=/usr/local/bin/shapeless-blog
+command_args="-basedir=${SHAPELESS_BLOG_DIR}"

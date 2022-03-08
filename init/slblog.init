@@ -1,7 +1,0 @@
-#!/bin/openrc-run
-# By drshapeless, drsl AT drshapeless DOT com
-
-supervisor=supervise-daemon
-SLBLOG_BASEDIR="/home/jacky/slblog"
-command=/usr/local/bin/slblog
-command_args="-basedir=${SLBLOG_BASEDIR}"

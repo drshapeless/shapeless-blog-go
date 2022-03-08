@@ -3,7 +3,7 @@
     <head>
         <link rel="stylesheet" href="https://drshapeless.com/css/default.css">
         <meta charset="utf-8">
-        <title>homepage - drshapeless blog</title>
+        <title>{{.Tag}} - drshapeless blog</title>
     </head>
     <body>
         <a href="https://blog.drshapeless.com">
@@ -36,17 +36,6 @@
                 </tr>
                 {{end}}
             </table>
-        </div>
-        <hr>
-        <div class="taglist">
-            <h3>Tags</h3>
-            <ul>
-                {{range .Tags}}
-                <li>
-                    <a href="https://blog.drshapeless.com/t/{{.}}">{{.}}</a>
-                </li>
-                {{end}}
-            </ul>
         </div>
     </body>
 </html>
