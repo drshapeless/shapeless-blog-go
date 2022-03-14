@@ -4,4 +4,4 @@
 supervisor=supervise-daemon
 SHAPELESS_BLOG_DIR="/home/jacky/shapeless-blog"
 command=/usr/local/bin/shapeless-blog
-command_args="-basedir=${SHAPELESS_BLOG_DIR}"
+command_args="-dir=${SHAPELESS_BLOG_DIR}"

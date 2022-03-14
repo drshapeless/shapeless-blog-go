@@ -25,7 +25,7 @@ Make sure you have ~go~ and ~sqlite~ installed in your machine.
 * Usage
 Show options.
 #+begin_src shell
-  slblog -h
+  shapeless-blog -h
 #+end_src
 
 There are only three options.
