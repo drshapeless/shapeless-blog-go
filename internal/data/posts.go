@@ -3,89 +3,124 @@ package data
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
-// Filename is just the lower case of the title with spaces replaced
-// by underline.
 type Post struct {
-	ID       int64  `json:"id"`
+	ID       int    `json:"id"`
 	Title    string `json:"title"`
-	Filename string `json:"filename"`
-	Created  string `json:"created"`
-	Updated  string `json:"updated"`
+	URL      string `json:"url"`
+	Content  string `json:"content"`
+	CreateAt string `json:"create_at"`
+	UpdateAt string `json:"update_at"`
+	Version  int    `json:"version"`
 }
 
 type PostModel struct {
 	DB *sql.DB
 }
 
-func (m *PostModel) GetWithID(id int64) (*Post, error) {
+func (m *PostModel) Insert(p *Post) error {
+	query := `
+INSERT INTO posts (title, content, url, create_at, update_at)
+VALUES (?, ?, ?, ?, ?)
+RETURNING id, version
+`
+	args := []interface{}{
+		p.Title,
+		p.Content,
+		p.URL,
+		p.CreateAt,
+		p.UpdateAt,
+	}
+
+	err := m.DB.QueryRow(query, args...).Scan(
+		&p.ID,
+		&p.Version,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *PostModel) getWith(keyword string, value interface{}, ty int) (*Post, error) {
+	query := `
+SELECT id, title, url, content, create_at, update_at, version
+FROM posts
+`
+
+	query += fmt.Sprintf("WHERE %s = ?", keyword)
+
+	var p Post
+
+	var tmp *sql.Row
+	switch ty {
+	case 0:
+		tmp = m.DB.QueryRow(query, value.(int))
+	case 1:
+		tmp = m.DB.QueryRow(query, value.(string))
+	default:
+		return nil, ErrRecordNotFound
+	}
+
+	err := tmp.Scan(
+		&p.ID,
+		&p.Title,
+		&p.URL,
+		&p.Content,
+		&p.CreateAt,
+		&p.UpdateAt,
+		&p.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &p, nil
+}
+
+func (m *PostModel) GetWithID(id int) (*Post, error) {
 	if id < 1 {
 		return nil, ErrRecordNotFound
 	}
 
-	query := `
-SELECT id, title, filename, created, updated
-FROM posts
-WHERE id = ?`
-
-	var p Post
-
-	err := m.DB.QueryRow(query, id).Scan(
-		&p.ID,
-		&p.Title,
-		&p.Filename,
-		&p.Created,
-		&p.Updated,
-	)
-
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return &p, nil
+	return m.getWith("id", id, 0)
 }
 
-func (m PostModel) GetWithFilename(name string) (*Post, error) {
-	query := `
-SELECT id, title, filename, created, updated
-FROM posts
-WHERE filename = ?`
-
-	var p Post
-
-	err := m.DB.QueryRow(query, name).Scan(
-		&p.ID,
-		&p.Title,
-		&p.Filename,
-		&p.Created,
-		&p.Updated,
-	)
-
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return &p, nil
+func (m PostModel) GetWithTitle(title string) (*Post, error) {
+	return m.getWith("title", title, 1)
 }
 
-func (m PostModel) GetAll() ([]*Post, error) {
-	query := `
-SELECT id, title, filename, created, updated
-FROM posts
-ORDER BY id DESC`
+func (m PostModel) GetWithURL(url string) (*Post, error) {
+	return m.getWith("url", url, 1)
+}
 
-	rows, err := m.DB.Query(query)
+func (m PostModel) GetAll(pagesize, page int) ([]*Post, error) {
+	// This function will not return content.
+	if pagesize < 1 || page < 1 {
+		return nil, ErrRecordNotFound
+	}
+	query := `
+SELECT id, title, url, create_at, update_at, version
+FROM posts
+ORDER BY id DESC
+LIMIT ? OFFSET ?
+`
+	args := []interface{}{
+		pagesize,
+		calculateOffset(pagesize, page),
+	}
+
+	rows, err := m.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,11 +134,11 @@ ORDER BY id DESC`
 		err := rows.Scan(
 			&p.ID,
 			&p.Title,
-			&p.Filename,
-			&p.Created,
-			&p.Updated,
+			&p.URL,
+			&p.CreateAt,
+			&p.UpdateAt,
+			&p.Version,
 		)
-
 		if err != nil {
 			return nil, err
 		}
@@ -116,4 +151,60 @@ ORDER BY id DESC`
 	}
 
 	return posts, nil
+}
+
+func (m PostModel) Update(p *Post) error {
+	query := `
+UPDATE posts
+SET title = ?, url = ?, version = version + 1
+WHERE id = ? AND version = ?
+RETURNING version`
+
+	args := []interface{}{
+		p.Title,
+		p.URL,
+		p.ID,
+		p.Version,
+	}
+
+	err := m.DB.QueryRow(query, args...).Scan(
+		&p.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m PostModel) Delete(id int) error {
+	if id < 1 {
+		return ErrRecordNotFound
+	}
+
+	query := `
+DELETE FROM posts
+WHERE id = ?`
+
+	result, err := m.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
 }
