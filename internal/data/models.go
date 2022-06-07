@@ -1,6 +1,9 @@
 package data
 
-import "database/sql"
+import (
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
+)
 
 type Models struct {
 	Posts PostModel
@@ -38,4 +41,13 @@ tag TEXT NOT NULL
 	}
 
 	return nil
+}
+
+func OpenDB(path string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", path)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }
