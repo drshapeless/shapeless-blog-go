@@ -28,4 +28,7 @@ func (app *Application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 	}
 
 	err = app.writeJSONInterface(w, http.StatusCreated, token, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
