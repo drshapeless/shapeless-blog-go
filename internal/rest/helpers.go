@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	timeLayout     = "2006-01-02 15:04"
-	birthdayLayout = "2006-01-02"
+	timeLayout = "2006-01-02 15:04"
+	dateLayout = "2006-01-02"
 )
 
 func (app *Application) readIDParam(r *http.Request) (int64, error) {
