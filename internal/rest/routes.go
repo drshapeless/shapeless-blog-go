@@ -9,25 +9,32 @@ import (
 func (app *Application) routes() http.Handler {
 	r := chi.NewRouter()
 
-	r.Get("/", app.showHomeHandler)
-	r.Get("/posts/{title}", app.showPostHandler)
-	r.Get("/tags/{tag}", app.showTagHandler)
+	r.Get("/", app.showHomeWebHandler)
+	r.Get("/posts/{title}", app.showPostWebHandler)
+	r.Get("/tags/{tag}", app.showTagWebHandler)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Use(enableCORS)
 		r.Route("/tokens", app.tokenRoutes)
 
-		r.Route("/posts", app.postRoutes)
+		r.Route("/blogging", app.bloggingRoutes)
 	})
 
 	return r
 }
 
-func (app *Application) postRoutes(r chi.Router) {
+func (app *Application) bloggingRoutes(r chi.Router) {
 	r.Use(app.authenticate)
 
-	r.Post("/create-post", app.createPostHandler)
-	r.Post("/create-template", app.createTemplateHandler)
+	r.Get("/posts/{title}", app.showPostHandler)
+	r.Post("/posts", app.createPostHandler)
+	r.Patch("/posts/id/{id}", app.updatePostHandler)
+	r.Delete("/posts/id/{id}", app.deletePostHandler)
+
+	r.Get("/templates/{title}", app.showTemplateHandler)
+	r.Post("/templates", app.createTemplateHandler)
+	r.Patch("/templates/{title}", app.updateTemplateHandler)
+	r.Delete("/templates/{title}", app.deleteTemplateHandler)
 }
 
 func (app *Application) tokenRoutes(r chi.Router) {

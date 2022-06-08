@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"errors"
 	"html/template"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func (app *Application) showHomeHandler(w http.ResponseWriter, r *http.Request) {
+func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Request) {
 	ts, err := app.Models.Templates.GetByName("home")
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -57,11 +58,16 @@ func (app *Application) showHomeHandler(w http.ResponseWriter, r *http.Request) 
 	tmpl.Execute(w, body)
 }
 
-func (app *Application) showPostHandler(w http.ResponseWriter, r *http.Request) {
+func (app *Application) showPostWebHandler(w http.ResponseWriter, r *http.Request) {
 	ti := chi.URLParam(r, "title")
 	post, err := app.Models.Posts.GetWithURL(ti)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 
@@ -84,7 +90,7 @@ func (app *Application) showPostHandler(w http.ResponseWriter, r *http.Request) 
 	tmpl.Execute(w, body)
 }
 
-func (app *Application) showTagHandler(w http.ResponseWriter, r *http.Request) {
+func (app *Application) showTagWebHandler(w http.ResponseWriter, r *http.Request) {
 	tag := chi.URLParam(r, "tag")
 
 	v := validator.New()
@@ -100,7 +106,12 @@ func (app *Application) showTagHandler(w http.ResponseWriter, r *http.Request) {
 
 	ps, err := app.Models.Tags.GetPostsWithTag(tag, pagesize, page)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 
@@ -124,3 +135,4 @@ func (app *Application) showTagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, body)
+}
