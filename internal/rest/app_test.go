@@ -1,4 +1,4 @@
-package rest_test
+package rest
 
 import (
 	"log"
@@ -6,23 +6,23 @@ import (
 	"sync"
 
 	"github.com/drshapeless/shapeless-blog/internal/data"
-	"github.com/drshapeless/shapeless-blog/internal/rest"
 )
 
-func TestApplication() *rest.Application {
-	p := "shapeless-blog.db"
+func ExampleApplication() *Application {
+	p := os.Getenv("SHAPELESS_BLOG_DB_PATH")
 	db, err := data.OpenDB(p)
 	if err != nil {
 		return nil
 	}
 
-	app := rest.Application{
+	app := Application{
 		Port:     9398,
-		DBPath:   "shapeless-blog.db",
+		DBPath:   p,
 		Models:   data.NewModels(db),
 		InfoLog:  log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime),
 		ErrorLog: log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile),
 		Wg:       sync.WaitGroup{},
+		Secret:   "testsecret",
 	}
 
 	return &app
