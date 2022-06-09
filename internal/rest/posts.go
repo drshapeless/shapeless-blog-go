@@ -2,15 +2,43 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/drshapeless/shapeless-blog/internal/data"
 	"github.com/go-chi/chi"
 )
 
-func (app *Application) showPostHandler(w http.ResponseWriter, r *http.Request) {
-	t := chi.URLParam(r, "title")
-	p, err := app.Models.Posts.GetWithURL(t)
+func (app *Application) showPostWithTitleHandler(w http.ResponseWriter, r *http.Request) {
+	tt := chi.URLParam(r, "title")
+	fmt.Fprintln(w, tt)
+	// p, err := app.Models.Posts.GetWithURL(tt)
+	// if err != nil {
+	//	switch {
+	//	case errors.Is(err, data.ErrRecordNotFound):
+	//		app.notFoundResponse(w, r)
+	//	default:
+	//		app.serverErrorResponse(w, r, err)
+	//	}
+	//	return
+	// }
+	// println(p)
+
+	// fmt.Fprintln(w, p.Content)
+
+	// err = app.writeJSONInterface(w, http.StatusOK, p, nil)
+	// if err != nil {
+	//	app.serverErrorResponse(w, r, err)
+	// }
+}
+
+func (app *Application) showPostWithIDHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+	}
+
+	p, err := app.Models.Posts.GetWithID(int(id))
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -83,9 +111,16 @@ func (app *Application) updatePostHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var p data.Post
-
-	p.ID = int(id)
+	p, err := app.Models.Posts.GetWithID(int(id))
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
 
 	if input.Title != nil {
 		p.Title = *input.Title
@@ -107,7 +142,7 @@ func (app *Application) updatePostHandler(w http.ResponseWriter, r *http.Request
 		p.UpdateAt = *input.UpdateAt
 	}
 
-	err = app.Models.Posts.Update(&p)
+	err = app.Models.Posts.Update(p)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
