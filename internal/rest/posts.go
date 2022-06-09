@@ -2,7 +2,6 @@ package rest
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/drshapeless/shapeless-blog/internal/data"
@@ -11,25 +10,21 @@ import (
 
 func (app *Application) showPostWithTitleHandler(w http.ResponseWriter, r *http.Request) {
 	tt := chi.URLParam(r, "title")
-	fmt.Fprintln(w, tt)
-	// p, err := app.Models.Posts.GetWithURL(tt)
-	// if err != nil {
-	//	switch {
-	//	case errors.Is(err, data.ErrRecordNotFound):
-	//		app.notFoundResponse(w, r)
-	//	default:
-	//		app.serverErrorResponse(w, r, err)
-	//	}
-	//	return
-	// }
-	// println(p)
+	p, err := app.Models.Posts.GetWithURL(tt)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
 
-	// fmt.Fprintln(w, p.Content)
-
-	// err = app.writeJSONInterface(w, http.StatusOK, p, nil)
-	// if err != nil {
-	//	app.serverErrorResponse(w, r, err)
-	// }
+	err = app.writeJSONInterface(w, http.StatusOK, p, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 func (app *Application) showPostWithIDHandler(w http.ResponseWriter, r *http.Request) {
