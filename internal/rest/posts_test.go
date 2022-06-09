@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -14,6 +15,8 @@ import (
 
 func TestCreatePost(t *testing.T) {
 	app := ExampleApplication()
+
+	t.Log("Testing create post...")
 
 	r := chi.NewRouter()
 	r.Route("/api/blogging", func(r chi.Router) {
@@ -63,6 +66,7 @@ func TestCreatePost(t *testing.T) {
 	}
 
 	var post data.Post
+	t.Log(rr.Body.String())
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
 		t.Fatal(err)
@@ -73,6 +77,8 @@ func TestCreatePost(t *testing.T) {
 
 func TestUpdatePost(t *testing.T) {
 	app := ExampleApplication()
+
+	t.Log("Testing update post...")
 
 	r := chi.NewRouter()
 	r.Route("/api/blogging", func(r chi.Router) {
@@ -111,6 +117,7 @@ func TestUpdatePost(t *testing.T) {
 	}
 
 	var post data.Post
+	t.Log(rr.Body.String())
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
 		t.Fatal(err)
@@ -121,6 +128,8 @@ func TestUpdatePost(t *testing.T) {
 
 func TestShowPostWithID(t *testing.T) {
 	app := ExampleApplication()
+
+	t.Log("Testing show post with id...")
 
 	r := chi.NewRouter()
 	r.Route("/api/blogging", func(r chi.Router) {
@@ -156,12 +165,14 @@ func TestShowPostWithID(t *testing.T) {
 func TestShowPostWithTitle(t *testing.T) {
 	app := ExampleApplication()
 
+	t.Log("Testing show post with title...")
+
 	r := chi.NewRouter()
 	r.Route("/api/blogging", func(r chi.Router) {
-		r.Get("/posts/{title}", app.showPostWithIDHandler)
+		r.Get("/posts/{title}", app.showPostWithTitleHandler)
 	})
 
-	req, err := http.NewRequest("GET", "/api/blogging/post/unit-testing", nil)
+	req, err := http.NewRequest("GET", "/api/blogging/posts/unit-testing", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,6 +186,7 @@ func TestShowPostWithTitle(t *testing.T) {
 			status,
 			http.StatusOK,
 		)
+		return
 	}
 
 	var post data.Post
@@ -185,4 +197,49 @@ func TestShowPostWithTitle(t *testing.T) {
 	}
 
 	t.Log(post)
+}
+
+func TestDeletePost(t *testing.T) {
+	app := ExampleApplication()
+
+	t.Log("Testing delete post...")
+
+	r := chi.NewRouter()
+	r.Route("/api/blogging", func(r chi.Router) {
+		r.Delete("/posts/id/{id}", app.deletePostHandler)
+	})
+
+	req, err := http.NewRequest("DELETE", "/api/blogging/posts/id/1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusNoContent {
+		t.Log(rr.Body.String())
+		t.Errorf(
+			"handler returned wrong status code: got %v want %v",
+			status,
+			http.StatusNoContent,
+		)
+		return
+	}
+}
+
+func TestPostAll(t *testing.T) {
+	p := os.Getenv("SHAPELESS_BLOG_DB_PATH")
+	db, err := data.OpenDB(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data.ResetDB(db)
+
+	TestCreatePost(t)
+	TestUpdatePost(t)
+	TestShowPostWithID(t)
+	TestShowPostWithTitle(t)
+	TestDeletePost(t)
 }
