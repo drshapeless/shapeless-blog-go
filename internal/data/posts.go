@@ -13,7 +13,7 @@ type Post struct {
 	Content  string `json:"content"`
 	CreateAt string `json:"create_at"`
 	UpdateAt string `json:"update_at"`
-	Version  int    `json:"version"`
+	Version  int    `json:"-"`
 }
 
 type PostModel struct {
@@ -156,13 +156,16 @@ LIMIT ? OFFSET ?
 func (m PostModel) Update(p *Post) error {
 	query := `
 UPDATE posts
-SET title = ?, url = ?, version = version + 1
+SET title = ?, url = ?, content = ?, create_at = ?, update_at = ?, version = version + 1
 WHERE id = ? AND version = ?
 RETURNING version`
 
 	args := []interface{}{
 		p.Title,
 		p.URL,
+		p.Content,
+		p.CreateAt,
+		p.UpdateAt,
 		p.ID,
 		p.Version,
 	}
