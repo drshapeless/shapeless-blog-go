@@ -36,6 +36,9 @@ func (app *Application) bloggingRoutes(r chi.Router) {
 	r.Get("/templates/{title}", app.showTemplateHandler)
 	r.Patch("/templates/{title}", app.updateTemplateHandler)
 	r.Delete("/templates/{title}", app.deleteTemplateHandler)
+
+	r.Get("/tags/{tag}", app.showTagHandler)
+	r.Delete("/tags/{tag}", app.deleteTagHandler)
 }
 
 func (app *Application) tokenRoutes(r chi.Router) {
