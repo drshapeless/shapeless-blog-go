@@ -9,10 +9,16 @@ import (
 	"time"
 
 	"github.com/drshapeless/shapeless-blog/internal/data"
+	"github.com/go-chi/chi"
 )
 
-func TestPosts(t *testing.T) {
+func TestCreatePost(t *testing.T) {
 	app := ExampleApplication()
+
+	r := chi.NewRouter()
+	r.Route("/api/blogging", func(r chi.Router) {
+		r.Post("/posts", app.createPostHandler)
+	})
 
 	// Creating post
 	postInput := struct {
@@ -44,7 +50,7 @@ func TestPosts(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(app.createPostHandler)
+	handler := r
 
 	handler.ServeHTTP(rr, req)
 
@@ -63,34 +69,40 @@ func TestPosts(t *testing.T) {
 	}
 
 	t.Log(post)
+}
 
-	// Update post
-	postInput.Content = "Here is some updated content."
+func TestUpdatePost(t *testing.T) {
+	app := ExampleApplication()
 
-	pj, err = json.Marshal(&postInput)
+	r := chi.NewRouter()
+	r.Route("/api/blogging", func(r chi.Router) {
+		r.Patch("/posts/id/{id}", app.updatePostHandler)
+	})
+
+	pi := struct {
+		Content string `json:"content"`
+	}{
+		Content: "Here is some updated content.",
+	}
+
+	pj, err := json.Marshal(&pi)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	reader = bytes.NewReader(pj)
+	reader := bytes.NewReader(pj)
 
-	req, err = http.NewRequest("PATCH", "/api/bloggin/posts/id/1", reader)
+	req, err := http.NewRequest("PATCH", "/api/blogging/posts/id/1", reader)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	q := req.URL.Query()
-	q.Add("id", "1")
-	req.URL.RawQuery = q.Encode()
 
-	rr = httptest.NewRecorder()
-	handler = http.HandlerFunc(app.updatePostHandler)
-
-	handler.ServeHTTP(rr, req)
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
-		t.Log(rr.Body.String())
 		t.Errorf(
 			"handler returned wrong status code: got %v want %v",
 			status,
@@ -98,11 +110,79 @@ func TestPosts(t *testing.T) {
 		)
 	}
 
+	var post data.Post
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	t.Log(post)
+}
 
+func TestShowPostWithID(t *testing.T) {
+	app := ExampleApplication()
+
+	r := chi.NewRouter()
+	r.Route("/api/blogging", func(r chi.Router) {
+		r.Get("/posts/id/{id}", app.showPostWithIDHandler)
+	})
+
+	req, err := http.NewRequest("GET", "/api/blogging/posts/id/1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf(
+			"handler returned wrong status code: got %v want %v",
+			status,
+			http.StatusOK,
+		)
+	}
+
+	var post data.Post
+	t.Log(rr.Body.String())
+	err = json.Unmarshal(rr.Body.Bytes(), &post)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(post)
+}
+
+func TestShowPostWithTitle(t *testing.T) {
+	app := ExampleApplication()
+
+	r := chi.NewRouter()
+	r.Route("/api/blogging", func(r chi.Router) {
+		r.Get("/posts/{title}", app.showPostWithIDHandler)
+	})
+
+	req, err := http.NewRequest("GET", "/api/blogging/post/unit-testing", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf(
+			"handler returned wrong status code: got %v want %v",
+			status,
+			http.StatusOK,
+		)
+	}
+
+	var post data.Post
+	t.Log(rr.Body.String())
+	err = json.Unmarshal(rr.Body.Bytes(), &post)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(post)
 }
