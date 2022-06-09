@@ -45,8 +45,7 @@ func TestData(t *testing.T) {
 		t.Error(err)
 		return
 	}
-
-	t.Logf("GetWithID %d, %s\n", p.ID, p.Title)
+	t.Log(p)
 
 	t.Log("GetWithTitle \"Test Post\"...")
 	p, err = m.Posts.GetWithTitle("Test Post")
@@ -54,7 +53,7 @@ func TestData(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	t.Logf("GetWithTitle %s, %d\n", p.Title, p.ID)
+	t.Log(p)
 
 	t.Log("GetWithURL \"Test URL\"...")
 	p, err = m.Posts.GetWithURL("test-post")
@@ -62,7 +61,7 @@ func TestData(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	t.Logf("GetWithURL %s, %d\n", p.URL, p.ID)
+	t.Log(p)
 
 	t.Log("GetAll...")
 	ps, err := m.Posts.GetAll(10, 1)
@@ -74,7 +73,9 @@ func TestData(t *testing.T) {
 		t.Errorf("Get all fucked up\n")
 		return
 	}
-	t.Log("GetAll good")
+	for _, pp := range ps {
+		t.Log(pp)
+	}
 
 	t.Log("Updating...")
 	p.Title = "Test Update"
@@ -83,7 +84,7 @@ func TestData(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	t.Log("Updated")
+	t.Log(p)
 
 	t1 := data.Tag{
 		PostID: 1,
@@ -124,7 +125,9 @@ func TestData(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	t.Log(ps)
+	for _, pp := range ps {
+		t.Log(pp)
+	}
 
 	t.Log("Getting tags with post id...")
 	tags, err = m.Tags.GetTagsWithPostID(1)
