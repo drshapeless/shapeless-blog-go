@@ -7,5 +7,8 @@ build:
 run:
 	go run ./cmd/shapeless-blog
 
+test:
+	./cmd/shapeless-blog -path=${SHAPELESS_BLOG_DB_PATH} -secret=${SHAPELESS_BLOG_SECRET}
+
 clean:
 	rm ./bin/shapeless-blog
