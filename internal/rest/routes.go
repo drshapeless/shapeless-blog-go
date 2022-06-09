@@ -14,7 +14,7 @@ func (app *Application) routes() http.Handler {
 	r.Get("/tags/{tag}", app.showTagWebHandler)
 
 	r.Route("/api", func(r chi.Router) {
-		// r.Use(enableCORS)
+		r.Use(enableCORS)
 		r.Route("/tokens", app.tokenRoutes)
 
 		r.Route("/blogging", app.bloggingRoutes)
@@ -24,16 +24,16 @@ func (app *Application) routes() http.Handler {
 }
 
 func (app *Application) bloggingRoutes(r chi.Router) {
-	// r.Use(app.authenticate)
+	r.Use(app.authenticate)
 
-	r.Get("/posts/title/{title}", app.showPostWithTitleHandler)
-	r.Get("/posts/id/{id}", app.showPostWithIDHandler)
 	r.Post("/posts", app.createPostHandler)
+	r.Get("/posts/{title}", app.showPostWithTitleHandler)
+	r.Get("/posts/id/{id}", app.showPostWithIDHandler)
 	r.Patch("/posts/id/{id}", app.updatePostHandler)
 	r.Delete("/posts/id/{id}", app.deletePostHandler)
 
-	r.Get("/templates/{title}", app.showTemplateHandler)
 	r.Post("/templates", app.createTemplateHandler)
+	r.Get("/templates/{title}", app.showTemplateHandler)
 	r.Patch("/templates/{title}", app.updateTemplateHandler)
 	r.Delete("/templates/{title}", app.deleteTemplateHandler)
 }
