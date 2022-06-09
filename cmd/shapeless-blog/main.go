@@ -16,7 +16,7 @@ var (
 
 func main() {
 	var app rest.Application
-	flag.StringVar(&app.DBPath, "dir", os.Getenv("SHAPELESS_BLOG_DB_PATH"), "shapeless-blog database path")
+	flag.StringVar(&app.DBPath, "path", os.Getenv("SHAPELESS_BLOG_DB_PATH"), "shapeless-blog database path")
 	flag.IntVar(&app.Port, "port", 9398, "shapeless-blog port")
 	flag.StringVar(&app.Secret, "secret", os.Getenv("SHAPELESS_BLOG_SECRET"), "shapeless-blog secret")
 	migrate := flag.Bool("migrate", false, "migrate database")
@@ -35,13 +35,16 @@ func main() {
 	defer db.Close()
 
 	if *migrate {
-		app.InfoLog.Println("Migrating database")
+		app.InfoLog.Println("Migrating database...")
 		err = data.Migrate(db)
 		if err != nil {
 			app.ErrorLog.Fatalln(err)
 		}
+		app.InfoLog.Println("Migration done.")
 		return
 	}
+
+	app.Models = data.NewModels(db)
 
 	app.InfoLog.Println("database connection pool established")
 
