@@ -25,15 +25,17 @@ func TestCreatePost(t *testing.T) {
 
 	// Creating post
 	postInput := struct {
-		Title    string `json:"title"`
-		Content  string `json:"content"`
-		URL      string `json:"url"`
-		CreateAt string `json:"create_at"`
-		UpdateAt string `json:"update_at"`
+		Title    string   `json:"title"`
+		URL      string   `json:"url"`
+		Tags     []string `json:"tags"`
+		Content  string   `json:"content"`
+		CreateAt string   `json:"create_at"`
+		UpdateAt string   `json:"update_at"`
 	}{
 		Title:    "Unit Testing",
-		Content:  "Here is some unit testing content.",
 		URL:      "unit-testing",
+		Tags:     []string{"unit", "test"},
+		Content:  "Here is some unit testing content.",
 		CreateAt: time.Now().Format(dateLayout),
 		UpdateAt: time.Now().Add(time.Hour).Format(dateLayout),
 	}
@@ -65,7 +67,7 @@ func TestCreatePost(t *testing.T) {
 		)
 	}
 
-	var post data.Post
+	var post restPost
 	t.Log(rr.Body.String())
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
@@ -86,8 +88,10 @@ func TestUpdatePost(t *testing.T) {
 	})
 
 	pi := struct {
-		Content string `json:"content"`
+		Tags    []string `json:"tags"`
+		Content string   `json:"content"`
 	}{
+		Tags:    []string{"update", "test"},
 		Content: "Here is some updated content.",
 	}
 
@@ -116,7 +120,7 @@ func TestUpdatePost(t *testing.T) {
 		)
 	}
 
-	var post data.Post
+	var post restPost
 	t.Log(rr.Body.String())
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
@@ -152,7 +156,7 @@ func TestShowPostWithID(t *testing.T) {
 		)
 	}
 
-	var post data.Post
+	var post restPost
 	t.Log(rr.Body.String())
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
@@ -189,7 +193,7 @@ func TestShowPostWithTitle(t *testing.T) {
 		return
 	}
 
-	var post data.Post
+	var post restPost
 	t.Log(rr.Body.String())
 	err = json.Unmarshal(rr.Body.Bytes(), &post)
 	if err != nil {
