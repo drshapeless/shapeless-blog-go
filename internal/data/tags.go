@@ -166,7 +166,7 @@ func (m TagModel) Delete(tag string, pid int) error {
 	}
 
 	query := `
-DELETE from tags
+DELETE FROM tags
 WHERE tag = ? AND post_id = ?`
 
 	result, err := m.DB.Exec(query, tag, pid)
@@ -210,5 +210,31 @@ WHERE post_id = ?`
 	}
 
 	return nil
+}
 
+func (m TagModel) DeleteAllForTag(tag string) error {
+	if tag == "" {
+		return ErrRecordNotFound
+	}
+
+	query := `
+DELETE FROM tags
+WHERE tag = ?
+`
+
+	result, err := m.DB.Exec(query, tag)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
 }
