@@ -76,7 +76,7 @@ func (m TokenModel) GetByPlaintext(tokenPlaintext string) (*Token, error) {
 	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
 
 	query := `
-SELECT hash, expiry
+SELECT hash
 FROM tokens
 WHERE hash = ? AND expiry > ?
 `
@@ -90,7 +90,6 @@ WHERE hash = ? AND expiry > ?
 
 	err := m.DB.QueryRow(query, args...).Scan(
 		&token.Hash,
-		&token.Expiry,
 	)
 	if err != nil {
 		switch {
