@@ -71,10 +71,13 @@ func (app *Application) showPostWebHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var body struct {
-		Post *data.Post
+	tags, err := app.Models.Tags.GetTagsWithPostID(post.ID)
+	if err != nil && !errors.Is(err, data.ErrRecordNotFound) {
+		app.serverErrorResponse(w, r, err)
+		return
 	}
-	body.Post = post
+
+	body := makeOutputPost(post, tags)
 
 	ts, err := app.Models.Templates.GetByName("post")
 	if err != nil {
