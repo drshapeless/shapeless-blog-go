@@ -8,7 +8,7 @@ import (
 type Template struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`
-	Version int    `json:"version"`
+	Version int    `json:"-"`
 }
 
 type TemplateModel struct {
