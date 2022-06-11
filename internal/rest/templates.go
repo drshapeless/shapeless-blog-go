@@ -34,12 +34,18 @@ func (app *Application) createTemplateHandler(w http.ResponseWriter, r *http.Req
 		Content string `json:"content"`
 	}
 
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
 	temp := &data.Template{
 		Name:    input.Name,
 		Content: input.Content,
 	}
 
-	err := app.Models.Templates.Insert(temp)
+	err = app.Models.Templates.Insert(temp)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
