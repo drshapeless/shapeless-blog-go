@@ -1,0 +1,22 @@
+#+title: shapeless blog
+
+
+* Templates
+The are three templates, "home", "post", "tag".
+** post
+In a post template, there would be a post object. A post object would
+have the following items.
+- ID
+  The post id.
+- Title
+  The post title.
+- URL
+  The post title in lower case and replacing every space with hyphen.
+- Tags
+  The tags of the post.
+- Content
+  The main content, which is a html body.
+- CreateAt
+  A string of the create time.
+- UpdateAt
+  A string of the update time.

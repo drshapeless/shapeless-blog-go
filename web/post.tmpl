@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{{.Title}} - drshapeless blog</title>
+    </head>
+    <body>
+        <a href="https://blog.drshapeless.com">
+            <div class="header">
+                <h1>drshapeless blog</h1>
+            </div>
+        </a>
+
+        <h1>{{.Title}}</h1>
+        <p class="date">created: {{.CreateAt}}    updated: {{.UpdateAt}}</p>
+        <p>Tag: {{range .Tags}}{{.}} {{end}}</p>
+        {{.Content}}
+    </body>
+</html>
