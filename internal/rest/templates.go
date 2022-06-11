@@ -64,16 +64,30 @@ func (app *Application) updateTemplateHandler(w http.ResponseWriter, r *http.Req
 		Content string `json:"content"`
 	}
 
-	t := &data.Template{
-		Name:    ti,
-		Content: input.Content,
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
 	}
 
-	err := app.Models.Templates.Update(t)
+	t, err := app.Models.Templates.GetByName(ti)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
 			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	t.Content = input.Content
+
+	err = app.Models.Templates.Update(t)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
 		default:
 			app.serverErrorResponse(w, r, err)
 		}

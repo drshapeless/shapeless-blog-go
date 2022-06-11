@@ -38,7 +38,7 @@ RETURNING version
 
 func (m TemplateModel) GetByName(n string) (*Template, error) {
 	query := `
-SELECT name, content
+SELECT name, content, version
 FROM templates
 WHERE name = ?`
 
@@ -47,6 +47,7 @@ WHERE name = ?`
 	err := m.DB.QueryRow(query, n).Scan(
 		&t.Name,
 		&t.Content,
+		&t.Version,
 	)
 	if err != nil {
 		switch {
