@@ -22,7 +22,11 @@
 
         <h1>{{.Title}}</h1>
         <p class="date">created: {{.CreateAt}}    updated: {{.UpdateAt}}</p>
-        <p>Tag: {{range .Tags}}{{.}} {{end}}</p>
+        <p>Tag:
+            {{range .Tags}}
+            <a href="https://blog.drshapeless.com/t/{{.}}.html">{{.}}</a>
+            {{end}}
+        </p>
         {{.Content}}
     </body>
 </html>
