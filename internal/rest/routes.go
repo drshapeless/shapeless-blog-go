@@ -10,8 +10,8 @@ func (app *Application) routes() http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/", app.showHomeWebHandler)
-	r.Get("/p/{title}", app.showPostWebHandler)
-	r.Get("/t/{tag}", app.showTagWebHandler)
+	r.Get("/p/{title}.html", app.showPostWebHandler)
+	r.Get("/t/{tag}.html", app.showTagWebHandler)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Use(enableCORS)
