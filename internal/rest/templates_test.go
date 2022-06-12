@@ -106,7 +106,7 @@ func TestUpdateTemplate(t *testing.T) {
 	t.Log("Testing update template...")
 
 	r := chi.NewRouter()
-	r.Patch("/api/blogging/templates/{title}", app.updateTemplateHandler)
+	r.Put("/api/blogging/templates/{title}", app.updateTemplateHandler)
 
 	input := struct {
 		Content string `json:"content"`
@@ -121,7 +121,7 @@ func TestUpdateTemplate(t *testing.T) {
 
 	reader := bytes.NewReader(i)
 
-	req, err := http.NewRequest("PATCH", "/api/blogging/templates/test", reader)
+	req, err := http.NewRequest("PUT", "/api/blogging/templates/test", reader)
 	if err != nil {
 		t.Fatal(err)
 	}

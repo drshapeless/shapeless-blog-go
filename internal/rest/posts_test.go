@@ -84,7 +84,7 @@ func TestUpdatePost(t *testing.T) {
 
 	r := chi.NewRouter()
 	r.Route("/api/blogging", func(r chi.Router) {
-		r.Patch("/posts/id/{id}", app.updatePostHandler)
+		r.Put("/posts/id/{id}", app.updatePostHandler)
 	})
 
 	pi := struct {
@@ -102,7 +102,7 @@ func TestUpdatePost(t *testing.T) {
 
 	reader := bytes.NewReader(pj)
 
-	req, err := http.NewRequest("PATCH", "/api/blogging/posts/id/1", reader)
+	req, err := http.NewRequest("PUT", "/api/blogging/posts/id/1", reader)
 	if err != nil {
 		t.Fatal(err)
 	}

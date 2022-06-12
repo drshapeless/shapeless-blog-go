@@ -31,12 +31,12 @@ func (app *Application) bloggingRoutes(r chi.Router) {
 	r.Post("/posts", app.createPostHandler)
 	r.Get("/posts/{title}", app.showPostWithTitleHandler)
 	r.Get("/posts/id/{id}", app.showPostWithIDHandler)
-	r.Patch("/posts/id/{id}", app.updatePostHandler)
+	r.Put("/posts/id/{id}", app.updatePostHandler)
 	r.Delete("/posts/id/{id}", app.deletePostHandler)
 
 	r.Post("/templates", app.createTemplateHandler)
 	r.Get("/templates/{title}", app.showTemplateHandler)
-	r.Patch("/templates/{title}", app.updateTemplateHandler)
+	r.Put("/templates/{title}", app.updateTemplateHandler)
 	r.Delete("/templates/{title}", app.deleteTemplateHandler)
 
 	r.Get("/tags/{tag}", app.showTagHandler)
