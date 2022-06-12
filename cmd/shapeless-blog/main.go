@@ -20,6 +20,7 @@ func main() {
 	flag.IntVar(&app.Port, "port", 9398, "shapeless-blog port")
 	flag.StringVar(&app.Secret, "secret", os.Getenv("SHAPELESS_BLOG_SECRET"), "shapeless-blog secret")
 	migrate := flag.Bool("migrate", false, "migrate database")
+	reset := flag.Bool("reset", false, "reset database")
 	flag.Parse()
 
 	app.Version = version
@@ -41,6 +42,16 @@ func main() {
 			app.ErrorLog.Fatalln(err)
 		}
 		app.InfoLog.Println("Migration done.")
+		return
+	}
+
+	if *reset {
+		app.InfoLog.Println("Resetting database...")
+		err = data.ResetDB(db)
+		if err != nil {
+			app.ErrorLog.Fatalln(err)
+		}
+		app.InfoLog.Println("Reset done.")
 		return
 	}
 
