@@ -1,0 +1,9 @@
+#!/sbin/openrc-run
+# By drshapeless, drsl@drshapeless.com
+
+supervisor=supervise-daemon
+SHAPELESS_BLOG_DB_PATH="/home/jacky/shapeless-blog.db"
+SHAPELESS_BLOG_SECRET="testsecret"
+
+command=/usr/local/bin/shapeless-blog
+command_args="-path=${SHAPELESS_BLOG_DB_PATH} -secret=${SHAPELESS_BLOG_SECRET}"
