@@ -10,6 +10,30 @@ import (
 	"github.com/go-chi/chi"
 )
 
+type htmlPost struct {
+	ID       int           `json:"id"`
+	Title    string        `json:"title"`
+	URL      string        `json:"url"`
+	Tags     []string      `json:"tags"`
+	Content  template.HTML `json:"content"`
+	CreateAt string        `json:"create_at"`
+	UpdateAt string        `json:"update_at"`
+}
+
+func makeHtmlPost(p *data.Post, t []string) *htmlPost {
+	o := &htmlPost{
+		ID:       p.ID,
+		Title:    p.Title,
+		URL:      p.URL,
+		Tags:     t,
+		Content:  template.HTML(p.Content),
+		CreateAt: p.CreateAt,
+		UpdateAt: p.UpdateAt,
+	}
+
+	return o
+}
+
 func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Request) {
 	ts, err := app.Models.Templates.GetByName("home")
 	if err != nil {
@@ -17,7 +41,8 @@ func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	tmpl, err := template.ParseGlob(ts.Content)
+	tmpl, err := template.New("home").Parse(ts.Content)
+
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -77,14 +102,14 @@ func (app *Application) showPostWebHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	body := makeOutputPost(post, tags)
+	body := makeHtmlPost(post, tags)
 
 	ts, err := app.Models.Templates.GetByName("post")
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-	tmpl, err := template.ParseGlob(ts.Content)
+	tmpl, err := template.New("post").Parse(ts.Content)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -131,7 +156,7 @@ func (app *Application) showTagWebHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	tmpl, err := template.ParseGlob(ts.Content)
+	tmpl, err := template.New("tag").Parse(ts.Content)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
