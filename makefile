@@ -1,8 +1,12 @@
 #!make
 include .envrc
 
+current_time = $(shell date --iso-8601=seconds)
+git_description = $(shell git describe --always --dirty --tags --long)
+linker_flags = "-s -X 'main.buildTime=${current_time}' -X 'main.version=${git_description}'"
+
 build:
-	go build -o ./bin/shapeless-blog ./cmd/shapeless-blog
+	go build -ldflags=${linker_flags} -o=./bin/shapeless-blog ./cmd/shapeless-blog
 
 run:
 	go run ./cmd/shapeless-blog

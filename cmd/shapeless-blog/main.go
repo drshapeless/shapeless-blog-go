@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -21,6 +22,7 @@ func main() {
 	flag.StringVar(&app.Secret, "secret", os.Getenv("SHAPELESS_BLOG_SECRET"), "shapeless-blog secret")
 	migrate := flag.Bool("migrate", false, "migrate database")
 	reset := flag.Bool("reset", false, "reset database")
+	displayVersion := flag.Bool("version", false, "Display version and exit")
 	flag.Parse()
 
 	app.Version = version
@@ -34,6 +36,12 @@ func main() {
 		app.ErrorLog.Fatalln(err)
 	}
 	defer db.Close()
+
+	if *displayVersion {
+		fmt.Printf("Version: %s\n", version)
+		fmt.Printf("Build time: %s\n", buildTime)
+		os.Exit(0)
+	}
 
 	if *migrate {
 		app.InfoLog.Println("Migrating database...")
