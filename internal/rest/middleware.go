@@ -76,6 +76,9 @@ func (app *Application) authenticate(next http.Handler) http.Handler {
 			switch {
 			case errors.Is(err, data.ErrRecordNotFound):
 				app.invalidCredentialsResponse(w, r)
+				// Delete all the expired token here.
+				// Doesn't matter if there is an error.
+				app.Models.Tokens.DeleteAllForExpired()
 			default:
 				app.serverErrorResponse(w, r, err)
 			}
