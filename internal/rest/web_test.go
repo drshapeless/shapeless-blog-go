@@ -9,7 +9,7 @@ import (
 )
 
 func TestShowHomeWeb(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show home web...")
 
@@ -36,7 +36,7 @@ func TestShowHomeWeb(t *testing.T) {
 }
 
 func TestShowPostWeb(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show post web...")
 
@@ -63,7 +63,7 @@ func TestShowPostWeb(t *testing.T) {
 }
 
 func TestShowTagWeb(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show tag web...")
 

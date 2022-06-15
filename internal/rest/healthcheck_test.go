@@ -10,7 +10,7 @@ import (
 )
 
 func TestHealthcheck(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing healthcheck...")
 

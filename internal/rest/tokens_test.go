@@ -11,7 +11,7 @@ import (
 )
 
 func TestToken(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	// Create token
 	tokenInput := struct {

@@ -11,7 +11,7 @@ import (
 )
 
 func TestShowTag(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show tag...")
 
@@ -50,7 +50,7 @@ func TestShowTag(t *testing.T) {
 }
 
 func TestDeleteTag(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show tag...")
 

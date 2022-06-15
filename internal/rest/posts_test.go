@@ -14,7 +14,7 @@ import (
 )
 
 func TestCreatePost(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing create post...")
 
@@ -78,7 +78,7 @@ func TestCreatePost(t *testing.T) {
 }
 
 func TestUpdatePost(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing update post...")
 
@@ -131,7 +131,7 @@ func TestUpdatePost(t *testing.T) {
 }
 
 func TestShowPostWithID(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show post with id...")
 
@@ -167,7 +167,7 @@ func TestShowPostWithID(t *testing.T) {
 }
 
 func TestShowPostWithTitle(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show post with title...")
 
@@ -204,7 +204,7 @@ func TestShowPostWithTitle(t *testing.T) {
 }
 
 func TestDeletePost(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing delete post...")
 

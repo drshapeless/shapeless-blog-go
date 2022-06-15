@@ -8,7 +8,7 @@ import (
 	"github.com/drshapeless/shapeless-blog/internal/data"
 )
 
-func ExampleApplication() *Application {
+func newApplication() *Application {
 	p := os.Getenv("SHAPELESS_BLOG_DB_PATH")
 	db, err := data.OpenDB(p)
 	if err != nil {
@@ -24,6 +24,8 @@ func ExampleApplication() *Application {
 		Wg:       sync.WaitGroup{},
 		Secret:   "testsecret",
 	}
+
+	app.TemplateCache = app.RefreshTemplateCache()
 
 	return &app
 }

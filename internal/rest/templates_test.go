@@ -12,7 +12,7 @@ import (
 )
 
 func TestCreateTemplate(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing create template...")
 
@@ -65,7 +65,7 @@ func TestCreateTemplate(t *testing.T) {
 }
 
 func TestShowTemplate(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing show template...")
 
@@ -101,7 +101,7 @@ func TestShowTemplate(t *testing.T) {
 }
 
 func TestUpdateTemplate(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing update template...")
 
@@ -152,7 +152,7 @@ func TestUpdateTemplate(t *testing.T) {
 }
 
 func TestDeleteTemplate(t *testing.T) {
-	app := ExampleApplication()
+	app := newApplication()
 
 	t.Log("Testing delete template...")
 
