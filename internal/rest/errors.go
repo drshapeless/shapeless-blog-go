@@ -90,3 +90,8 @@ func (app *Application) signatureNotExistResponse(w http.ResponseWriter, r *http
 	message := "the signature does not exist"
 	app.errorResponse(w, r, http.StatusBadRequest, message)
 }
+
+func (app *Application) emptyTemplateResponse(w http.ResponseWriter, r *http.Request) {
+	message := "the requested template is empty"
+	app.errorResponse(w, r, http.StatusNotFound, message)
+}

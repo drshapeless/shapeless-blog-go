@@ -51,6 +51,8 @@ func (app *Application) createTemplateHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	app.updateTemplateCache(temp)
+
 	err = app.writeJSONInterface(w, http.StatusCreated, temp, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -93,6 +95,8 @@ func (app *Application) updateTemplateHandler(w http.ResponseWriter, r *http.Req
 		}
 		return
 	}
+
+	app.updateTemplateCache(t)
 
 	err = app.writeJSONInterface(w, http.StatusOK, t, nil)
 	if err != nil {

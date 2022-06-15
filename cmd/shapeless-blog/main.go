@@ -67,6 +67,10 @@ func main() {
 
 	app.InfoLog.Println("database connection pool established")
 
+	app.TemplateCache = app.RefreshTemplateCache()
+
+	app.InfoLog.Println("template cache loaded")
+
 	err = app.Serve()
 	if err != nil {
 		app.ErrorLog.Fatalln(err)

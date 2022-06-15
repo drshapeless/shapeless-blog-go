@@ -35,18 +35,6 @@ func makeHtmlPost(p *data.Post, t []string) *htmlPost {
 }
 
 func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Request) {
-	ts, err := app.Models.Templates.GetByName("home")
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
-	tmpl, err := template.New("home").Parse(ts.Content)
-
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-	}
-
 	var body struct {
 		Posts []*data.Post
 		Tags  []string
@@ -80,6 +68,12 @@ func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Reques
 
 	body.Tags = tags
 
+	tmpl := app.TemplateCache["home"]
+	if tmpl == nil {
+		app.emptyTemplateResponse(w, r)
+		return
+	}
+
 	tmpl.Execute(w, body)
 }
 
@@ -104,14 +98,9 @@ func (app *Application) showPostWebHandler(w http.ResponseWriter, r *http.Reques
 
 	body := makeHtmlPost(post, tags)
 
-	ts, err := app.Models.Templates.GetByName("post")
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-	tmpl, err := template.New("post").Parse(ts.Content)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
+	tmpl := app.TemplateCache["post"]
+	if tmpl == nil {
+		app.emptyTemplateResponse(w, r)
 		return
 	}
 
@@ -150,15 +139,9 @@ func (app *Application) showTagWebHandler(w http.ResponseWriter, r *http.Request
 	body.Posts = ps
 	body.Tag = tag
 
-	ts, err := app.Models.Templates.GetByName("tag")
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
-	tmpl, err := template.New("tag").Parse(ts.Content)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
+	tmpl := app.TemplateCache["tag"]
+	if tmpl == nil {
+		app.emptyTemplateResponse(w, r)
 		return
 	}
 
