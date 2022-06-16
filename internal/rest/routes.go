@@ -6,12 +6,12 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// @title shapeless-blog API
-// @version 3.1.0
-// @description shapeless-blog api server.
+// @title        shapeless-blog API
+// @version      3.1.0
+// @description  shapeless-blog api server.
 
-// @host https://blog.drshapeless.com
-// @BasePath /api
+// @host      https://blog.drshapeless.com
+// @BasePath  /api
 func (app *Application) routes() http.Handler {
 	r := chi.NewRouter()
 

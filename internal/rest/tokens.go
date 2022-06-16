@@ -10,17 +10,17 @@ type secretInput struct {
 }
 
 // createAuthenticationTokenHandler
-// @Summary Create authentication token
+// @Summary  Create authentication token
 // @Description
-// @Tags tokens
-// @Accept  json
+// @Tags     tokens
+// @Accept   json
 // @Produce  json
-// @Param data body secretInput true "Secret object"
-// @Success 201 {object} data.Token
-// @Failure 400 {object} errorObject
-// @Failure 401 {object} errorObject
-// @Failure 500 {object} errorObject
-// @Router /blogging/tokens [post]
+// @Param    data  body      secretInput  true  "Secret object"
+// @Success  201   {object}  data.Token
+// @Failure  400   {object}  errorObject
+// @Failure  401   {object}  errorObject
+// @Failure  500   {object}  errorObject
+// @Router   /blogging/tokens [post]
 func (app *Application) createAuthenticationTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var input secretInput
 
