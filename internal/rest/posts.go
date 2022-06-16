@@ -32,6 +32,17 @@ func makeOutputPost(post *data.Post, tags []string) *restPost {
 	return o
 }
 
+// showPostWithTitleHandler
+// @Summary Show a post with title
+// @Description
+// @Tags posts
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param title path string  true "Post title"
+// @Success 200 {object} restPost
+// @Failure 404 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/posts/{title} [get]
 func (app *Application) showPostWithTitleHandler(w http.ResponseWriter, r *http.Request) {
 	tt := chi.URLParam(r, "title")
 	p, err := app.Models.Posts.GetWithURL(tt)
@@ -59,6 +70,17 @@ func (app *Application) showPostWithTitleHandler(w http.ResponseWriter, r *http.
 	}
 }
 
+// showPostWithIDHandler
+// @Summary Show a post with id
+// @Description
+// @Tags posts
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param id path int true "Post id."
+// @Success 200 {object} restPost
+// @Failure 404 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/posts/id/{id} [get]
 func (app *Application) showPostWithIDHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -90,6 +112,18 @@ func (app *Application) showPostWithIDHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// createPostHandler
+// @Summary
+// @Description
+// @Tags posts
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param data body restPost true "Input post object"
+// @Success 201 {object} restPost
+// @Failure 400 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/posts [post]
 func (app *Application) createPostHandler(w http.ResponseWriter, r *http.Request) {
 	var input restPost
 
@@ -133,6 +167,21 @@ func (app *Application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// updatePostHandler
+// @Summary Update post
+// @Description
+// @Tags posts
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param data body restPost true "Post object input"
+// @Param id path int true "Post id"
+// @Success 200 {object} restPost
+// @Failure 400 {object} errorObject
+// @Failure 404 {object} errorObject
+// @Failure 409 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/posts/id/{id} [put]
 func (app *Application) updatePostHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -222,6 +271,17 @@ func (app *Application) updatePostHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// deletePostHandler
+// @Summary Delete post with id
+// @Description
+// @Tags
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param id path int true "Post id"
+// @Success 204 "No content"
+// @Failure 404 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/posts/id/{id} [delete]
 func (app *Application) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {

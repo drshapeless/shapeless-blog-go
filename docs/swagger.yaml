@@ -1,0 +1,397 @@
+basePath: /api
+definitions:
+  data.Template:
+    properties:
+      content:
+        type: string
+      name:
+        type: string
+    type: object
+  data.Token:
+    properties:
+      expiry:
+        type: string
+      token:
+        type: string
+    type: object
+  rest.errorObject:
+    properties:
+      error: {}
+    type: object
+  rest.restPost:
+    properties:
+      content:
+        type: string
+      create_at:
+        type: string
+      id:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      update_at:
+        type: string
+      url:
+        type: string
+    type: object
+  rest.secretInput:
+    properties:
+      secret:
+        type: string
+    type: object
+host: https://blog.drshapeless.com
+info:
+  contact: {}
+  description: shapeless-blog api server.
+  title: shapeless-blog API
+  version: 3.1.0
+paths:
+  /blogging/posts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Input post object
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.restPost'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/rest.restPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      tags:
+      - posts
+  /blogging/posts/{title}:
+    get:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Post title
+        in: path
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.restPost'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Show a post with title
+      tags:
+      - posts
+  /blogging/posts/id/{id}:
+    delete:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Post id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Delete post with id
+      tags:
+      - ""
+    get:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Post id.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.restPost'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Show a post with id
+      tags:
+      - posts
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Post object input
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.restPost'
+      - description: Post id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.restPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Update post
+      tags:
+      - posts
+  /blogging/templates:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Template object
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/data.Template'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/data.Template'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Create template
+      tags:
+      - templates
+  /blogging/templates/{title}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Template title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Delete template
+      tags:
+      - templates
+    get:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Template title string
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.Template'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Show template
+      tags:
+      - templates
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Template object
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/data.Template'
+      - description: Template title
+        in: path
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.Template'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Update template
+      tags:
+      - templates
+  /blogging/tokens:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Secret object
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/rest.secretInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/data.Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.errorObject'
+      summary: Create authentication token
+      tags:
+      - tokens
+swagger: "2.0"

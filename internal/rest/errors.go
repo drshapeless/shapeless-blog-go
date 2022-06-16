@@ -9,6 +9,10 @@ func (app *Application) logError(r *http.Request, err error) {
 	app.ErrorLog.Printf("%s, request_method:%s, request_url:%s\n", err, r.Method, r.URL.String())
 }
 
+type errorObject struct {
+	Error interface{} `json:"error"`
+}
+
 func (app *Application) errorResponse(w http.ResponseWriter, r *http.Request, status int, message interface{}) {
 	env := envelope{"error": message}
 

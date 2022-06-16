@@ -8,6 +8,17 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// showTemplateHandler
+// @Summary Show template
+// @Description
+// @Tags templates
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param title body string true "Template title string"
+// @Success 200 {object} data.Template
+// @Failure 404 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/templates/{title} [get]
 func (app *Application) showTemplateHandler(w http.ResponseWriter, r *http.Request) {
 	t := chi.URLParam(r, "title")
 
@@ -28,6 +39,18 @@ func (app *Application) showTemplateHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// createTemplateHandler
+// @Summary Create template
+// @Description
+// @Tags templates
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param data body data.Template true "Template object"
+// @Success 201 {object} data.Template
+// @Failure 400 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/templates [post]
 func (app *Application) createTemplateHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Name    string `json:"name"`
@@ -59,6 +82,21 @@ func (app *Application) createTemplateHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// updateTemplateHandler
+// @Summary Update template
+// @Description
+// @Tags templates
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param data body data.Template true "Template object"
+// @Param title path string true "Template title"
+// @Success 200 {object} data.Template
+// @Failure 400 {object} errorObject
+// @Failure 404 {object} errorObject
+// @Failure 409 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/templates/{title} [put]
 func (app *Application) updateTemplateHandler(w http.ResponseWriter, r *http.Request) {
 	ti := chi.URLParam(r, "title")
 
@@ -104,6 +142,18 @@ func (app *Application) updateTemplateHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// deleteTemplateHandler
+// @Summary Delete template
+// @Description
+// @Tags templates
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer"
+// @Param title body string true "Template title"
+// @Success 204 "No content"
+// @Failure 409 {object} errorObject
+// @Failure 500 {object} errorObject
+// @Router /blogging/templates/{title} [delete]
 func (app *Application) deleteTemplateHandler(w http.ResponseWriter, r *http.Request) {
 	ti := chi.URLParam(r, "title")
 
