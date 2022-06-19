@@ -1,22 +1,128 @@
 #+title: shapeless blog
 
+* Background
+Shapeless blog is my personal blogging backend written in Go. It
+implements a rest service and renders a simple web template.
 
-* Templates
-The are three templates, "home", "post", "tag".
-** post
-In a post template, there would be a post object. A post object would
-have the following items.
-- ID
-  The post id.
-- Title
-  The post title.
-- URL
-  The post title in lower case and replacing every space with hyphen.
-- Tags
-  The tags of the post.
-- Content
-  The main content, which is a html body.
-- CreateAt
-  A string of the create time.
-- UpdateAt
-  A string of the update time.
+I wrote it because I want to have a way to write blog posts in Emacs
+with ease. There are a lot of alternative solutions, but none of them
+are made for org-mode, most of them are for markdown.
+
+Previously, the traditional way of blogging in org-mode is to use the
+internal ox-html backend to export into pure html files. However, you
+cannot have a universal header which you can change without modifying
+every file. This in the past gave me a lot of headaches.
+
+* Introduction
+Shapeless blog is a simple blogging solution in the server side. It
+accepts HTTP requests to create, update or delete blog posts.
+
+For the api, please refers to [[./docs/swagger.yaml][this]].
+
+Currently, I have only written a client for Emacs,
+[[https://github.com/drshapeless/emacs-shapeless-blog][emacs-shapeless-blog]].
+
+* Installation
+
+** Prerequisite
+- Go
+- SQLite
+
+** Compile from source
+#+begin_src shell
+  git clone https://github.com/drshapeless/shapeless-blog
+  cd shapeless-blog
+  make build
+  sudo make install
+#+end_src
+
+* Usage
+If this is your first time starting shapeless-blog, migrate the
+datebase first.
+#+begin_src shell
+  shapeless-blog -path=~/shapeless-blog.db -migrate
+#+end_src
+
+After migration, you can start your service.
+#+begin_src shell
+  shapeless-blog -path=~/shapeless-blog.db -secret="testsecret"
+#+end_src
+
+By default, the shapeless-blog listen to port 9398, you can make nginx
+to point a url into this port.
+
+Currently I have only written a service for OpenRC,
+[[./init/shapeless-blog.init][shapeless-blog.init]]. Modify the secret before starting the service,
+otherwise your secret is known by everyone.
+
+Get a token.
+#+begin_src shell
+  curl -d '{"secret":"testsecret"}' localhost:9398/api/blogging/tokens
+#+end_src
+
+In any other api, you should use the token as a bearer token in the
+HTTP header, e.g. to get the blog post with id 1.
+#+begin_src shell
+  curl -H "Authorization: Bearer <token>" localhost:9398/api/blogging/posts/id/1
+#+end_src
+
+The first thing you should do after initializing shapeless-blog is to
+create three template, with name "post", "home", "tag".
+#+begin_src shell
+  curl -H "Authorization: Bearer <token>" \
+       -d '{"name": "home", "content": "<your template>"}' \
+       localhost:9398/api/blogging/templates
+#+end_src
+
+They serve for the three view of your website. If you are not going to
+publish your blog using the internal web structure, omit this part.
+
+* Template
+
+** Home
+The home template receives an object of this.
+#+begin_src go
+        var body struct {
+                Posts []*data.Post
+                Tags  []string
+        }
+#+end_src
+
+An array of posts and an array of tags, the posts array consist of the
+first 100 posts. The tags array is all the unique tags used in the
+blog posts.
+
+Be careful, the posts in the home template object have an empty
+content parameter to save resources.
+
+The properly structure the "home" template, you can refer to the
+sample [[./web/home.tmpl][template]].
+
+** Post
+The post template object is a lot simpler.
+#+begin_src go
+  type htmlPost struct {
+          ID       int           `json:"id"`
+          Title    string        `json:"title"`
+          URL      string        `json:"url"`
+          Tags     []string      `json:"tags"`
+          Content  template.HTML `json:"content"`
+          CreateAt string        `json:"create_at"`
+          UpdateAt string        `json:"update_at"`
+  }
+#+end_src
+
+See [[./web/post.tmpl][sample]].
+
+** Tag
+The tag template object.
+#+begin_src go
+  var body struct {
+          Posts []*data.Post
+          Tag   string
+  }
+#+end_src
+
+The posts here also have an empty content body.
+
+See [[./web/tag.tmpl][sample]].

@@ -16,3 +16,9 @@ test:
 
 clean:
 	rm ./bin/shapeless-blog
+
+install:
+	cp ./bin/shapeless-blog /usr/local/bin/shapeless-blog
+
+uninstall:
+	rm /usr/local/bin/shapeless-blog
