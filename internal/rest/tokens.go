@@ -35,6 +35,8 @@ func (app *Application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		return
 	}
 
+	app.Models.Tokens.DeleteAllForExpired()
+
 	token, err := app.Models.Tokens.New(24 * time.Hour)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
