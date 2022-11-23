@@ -14,18 +14,20 @@ type htmlPost struct {
 	ID       int           `json:"id"`
 	Title    string        `json:"title"`
 	URL      string        `json:"url"`
+	Preview  string        `json:"preview"`
 	Tags     []string      `json:"tags"`
 	Content  template.HTML `json:"content"`
 	CreateAt string        `json:"create_at"`
 	UpdateAt string        `json:"update_at"`
 }
 
-func makeHtmlPost(p *data.Post, t []string) *htmlPost {
+func makeHtmlPost(p *data.Post, tags []string) *htmlPost {
 	o := &htmlPost{
 		ID:       p.ID,
 		Title:    p.Title,
 		URL:      p.URL,
-		Tags:     t,
+		Preview:  p.Preview,
+		Tags:     tags,
 		Content:  template.HTML(p.Content),
 		CreateAt: p.CreateAt,
 		UpdateAt: p.UpdateAt,
@@ -36,8 +38,7 @@ func makeHtmlPost(p *data.Post, t []string) *htmlPost {
 
 func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Posts []*data.Post
-		Tags  []string
+		Posts []*htmlPost
 	}
 
 	v := validator.New()
@@ -58,15 +59,16 @@ func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	body.Posts = posts
+	for _, post := range posts {
+		tags, err := app.Models.Tags.GetTagsWithPostID(post.ID)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
 
-	tags, err := app.Models.Tags.GetAllDistinctTags()
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
+		hpost := makeHtmlPost(post, tags)
+		body.Posts = append(body.Posts, hpost)
 	}
-
-	body.Tags = tags
 
 	tmpl := app.TemplateCache["home"]
 	if tmpl == nil {
