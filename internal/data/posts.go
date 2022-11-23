@@ -10,6 +10,7 @@ type Post struct {
 	ID       int    `json:"id"`
 	Title    string `json:"title"`
 	URL      string `json:"url"`
+	Preview  string `json:"preview"`
 	Content  string `json:"content"`
 	CreateAt string `json:"create_at"`
 	UpdateAt string `json:"update_at"`
@@ -22,14 +23,15 @@ type PostModel struct {
 
 func (m *PostModel) Insert(p *Post) error {
 	query := `
-INSERT INTO posts (title, content, url, create_at, update_at)
+INSERT INTO posts (title, url, preview, content, create_at, update_at)
 VALUES (?, ?, ?, ?, ?)
 RETURNING id, version
 `
 	args := []interface{}{
 		p.Title,
-		p.Content,
 		p.URL,
+		p.Preview,
+		p.Content,
 		p.CreateAt,
 		p.UpdateAt,
 	}
@@ -48,7 +50,7 @@ RETURNING id, version
 
 func (m *PostModel) getWith(keyword string, value interface{}, ty int) (*Post, error) {
 	query := `
-SELECT id, title, url, content, create_at, update_at, version
+SELECT id, title, url, preview, content, create_at, update_at, version
 FROM posts
 `
 
@@ -70,6 +72,7 @@ FROM posts
 		&p.ID,
 		&p.Title,
 		&p.URL,
+		&p.Preview,
 		&p.Content,
 		&p.CreateAt,
 		&p.UpdateAt,
@@ -110,7 +113,7 @@ func (m PostModel) GetAll(pagesize, page int) ([]*Post, error) {
 		return nil, ErrRecordNotFound
 	}
 	query := `
-SELECT id, title, url, create_at, update_at, version
+SELECT id, title, url, preview, create_at, update_at, version
 FROM posts
 ORDER BY id DESC
 LIMIT ? OFFSET ?
@@ -135,6 +138,7 @@ LIMIT ? OFFSET ?
 			&p.ID,
 			&p.Title,
 			&p.URL,
+			&p.Preview,
 			&p.CreateAt,
 			&p.UpdateAt,
 			&p.Version,
@@ -156,13 +160,14 @@ LIMIT ? OFFSET ?
 func (m PostModel) Update(p *Post) error {
 	query := `
 UPDATE posts
-SET title = ?, url = ?, content = ?, create_at = ?, update_at = ?, version = version + 1
+SET title = ?, url = ?, preview = ?, content = ?, create_at = ?, update_at = ?, version = version + 1
 WHERE id = ? AND version = ?
 RETURNING version`
 
 	args := []interface{}{
 		p.Title,
 		p.URL,
+		p.Preview,
 		p.Content,
 		p.CreateAt,
 		p.UpdateAt,

@@ -12,6 +12,7 @@ type restPost struct {
 	ID       int      `json:"id"`
 	Title    string   `json:"title"`
 	URL      string   `json:"url"`
+	Preview  string   `json:"preview"`
 	Tags     []string `json:"tags"`
 	Content  string   `json:"content"`
 	CreateAt string   `json:"create_at"`
@@ -23,6 +24,7 @@ func makeOutputPost(post *data.Post, tags []string) *restPost {
 		ID:       post.ID,
 		Title:    post.Title,
 		URL:      post.URL,
+		Preview:  post.Preview,
 		Tags:     tags,
 		Content:  post.Content,
 		CreateAt: post.CreateAt,
@@ -135,8 +137,9 @@ func (app *Application) createPostHandler(w http.ResponseWriter, r *http.Request
 
 	p := &data.Post{
 		Title:    input.Title,
-		Content:  input.Content,
 		URL:      input.URL,
+		Preview:  input.Preview,
+		Content:  input.Content,
 		CreateAt: input.CreateAt,
 		UpdateAt: input.UpdateAt,
 	}
@@ -192,6 +195,7 @@ func (app *Application) updatePostHandler(w http.ResponseWriter, r *http.Request
 	var input struct {
 		Title    *string  `json:"title"`
 		URL      *string  `json:"url"`
+		Preview  *string  `json:"preview"`
 		Content  *string  `json:"content"`
 		Tags     []string `json:"tags"`
 		CreateAt *string  `json:"create_at"`
@@ -215,16 +219,20 @@ func (app *Application) updatePostHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	if input.URL != nil {
+		p.URL = *input.URL
+	}
+
 	if input.Title != nil {
 		p.Title = *input.Title
 	}
 
-	if input.Content != nil {
-		p.Content = *input.Content
+	if input.Preview != nil {
+		p.Preview = *input.Preview
 	}
 
-	if input.URL != nil {
-		p.URL = *input.URL
+	if input.Content != nil {
+		p.Content = *input.Content
 	}
 
 	if len(input.Tags) > 0 {

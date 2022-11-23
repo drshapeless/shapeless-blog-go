@@ -575,6 +575,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "preview": {
+                    "type": "string"
+                },
                 "tags": {
                     "type": "array",
                     "items": {

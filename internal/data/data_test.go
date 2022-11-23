@@ -26,6 +26,7 @@ func TestData(t *testing.T) {
 	testpost := data.Post{
 		Title:    "Test Post",
 		URL:      "test-post",
+		Preview:  "A good preview.",
 		Content:  "Here is some test content.",
 		CreateAt: time.Now().Add(time.Hour * -24).Format(timeFormat),
 		UpdateAt: time.Now().Format(timeFormat),

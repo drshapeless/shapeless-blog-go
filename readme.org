@@ -105,6 +105,7 @@ The post template object is a lot simpler.
           ID       int           `json:"id"`
           Title    string        `json:"title"`
           URL      string        `json:"url"`
+          Preview  string        `json:"preview"`
           Tags     []string      `json:"tags"`
           Content  template.HTML `json:"content"`
           CreateAt string        `json:"create_at"`

@@ -78,7 +78,7 @@ func (m *TagModel) GetPostsWithTag(t string, pagesize, page int) ([]*Post, error
 
 	// This will not return post content.
 	query := `
-SELECT posts.id, posts.title, posts.url, posts.create_at, posts.update_at
+SELECT posts.id, posts.title, posts.url, posts.preview, posts.create_at, posts.update_at
 FROM posts
 INNER JOIN tags
 ON posts.id = tags.post_id
@@ -107,6 +107,7 @@ LIMIT ? OFFSET ?`
 			&p.ID,
 			&p.Title,
 			&p.URL,
+			&p.Preview,
 			&p.CreateAt,
 			&p.UpdateAt,
 		)

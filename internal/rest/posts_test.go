@@ -27,6 +27,7 @@ func TestCreatePost(t *testing.T) {
 	postInput := struct {
 		Title    string   `json:"title"`
 		URL      string   `json:"url"`
+		Preview  string   `json:"preview"`
 		Tags     []string `json:"tags"`
 		Content  string   `json:"content"`
 		CreateAt string   `json:"create_at"`
@@ -34,6 +35,7 @@ func TestCreatePost(t *testing.T) {
 	}{
 		Title:    "Unit Testing",
 		URL:      "unit-testing",
+		Preview:  "A good preview.",
 		Tags:     []string{"unit", "test"},
 		Content:  "Here is some unit testing content.",
 		CreateAt: time.Now().Format(dateLayout),

@@ -78,6 +78,7 @@ func (app *Application) showHomeWebHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *Application) showPostWebHandler(w http.ResponseWriter, r *http.Request) {
+	// No need to show preview when showing post.
 	ti := chi.URLParam(r, "title")
 	post, err := app.Models.Posts.GetWithURL(ti)
 	if err != nil {

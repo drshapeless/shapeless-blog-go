@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS posts(
 id         INTEGER PRIMARY KEY,
 title      TEXT NOT NULL,
 url        TEXT NOT NULL,
+preview    TEXT NOT NULL,
 content    TEXT NOT NULL,
 create_at  TEXT NOT NULL,
 update_at  TEXT NOT NULL,
