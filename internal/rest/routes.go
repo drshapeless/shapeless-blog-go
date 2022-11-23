@@ -7,7 +7,7 @@ import (
 )
 
 // @title        shapeless-blog API
-// @version      3.1.0
+// @version      4.0.0
 // @description  shapeless-blog api server.
 
 // @host      https://blog.drshapeless.com

@@ -4,7 +4,7 @@
         "description": "shapeless-blog api server.",
         "title": "shapeless-blog API",
         "contact": {},
-        "version": "3.1.0"
+        "version": "4.0.0"
     },
     "host": "https://blog.drshapeless.com",
     "basePath": "/api",

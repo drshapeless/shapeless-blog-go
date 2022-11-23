@@ -49,7 +49,7 @@ info:
   contact: {}
   description: shapeless-blog api server.
   title: shapeless-blog API
-  version: 3.1.0
+  version: 4.0.0
 paths:
   /blogging/posts:
     post:
