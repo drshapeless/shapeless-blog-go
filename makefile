@@ -22,3 +22,7 @@ install:
 
 uninstall:
 	rm /usr/local/bin/shapeless-blog
+
+deploy: build
+	scp ./bin/shapeless-blog 'jacky@drshapeless.com:shapeless-blog'
+	ssh jacky@drshapeless.com 'zsh' < ./scripts/deploy.sh
