@@ -8,7 +8,6 @@ import (
 	"github.com/drshapeless/shapeless-blog/internal/data"
 	"github.com/drshapeless/shapeless-blog/internal/validator"
 	"github.com/go-chi/chi"
-	"github.com/gogo/protobuf/test/tags"
 )
 
 type htmlPost struct {
