@@ -8,6 +8,7 @@ import (
 	"github.com/drshapeless/shapeless-blog/internal/data"
 	"github.com/drshapeless/shapeless-blog/internal/validator"
 	"github.com/go-chi/chi"
+	"github.com/gogo/protobuf/test/tags"
 )
 
 type htmlPost struct {
@@ -136,10 +137,21 @@ func (app *Application) showTagWebHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	var body struct {
-		Posts []*data.Post
+		Posts []*htmlPost
 		Tag   string
 	}
-	body.Posts = ps
+
+	for _, post := range ps {
+		tags, err := app.Models.Tags.GetTagsWithPostID(post.ID)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+
+		hpost := makeHtmlPost(post, tags)
+		body.Posts = append(body.Posts, hpost)
+	}
+
 	body.Tag = tag
 
 	tmpl := app.TemplateCache["tag"]
