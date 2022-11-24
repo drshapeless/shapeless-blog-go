@@ -24,13 +24,23 @@
             <a href="https://github.com/drshapeless" class="right">GitHub</a>
         </div>
 
-        <h1>{{.Title}}</h1>
-        <p class="date">created: {{.CreateAt}}    updated: {{.UpdateAt}}</p>
-        <p>Tag:
+        <h1 class="blog-post-title">{{.Title}}</h1>
+
+        <div class="blog-post-timestamp">
+            Create at: {{.CreateAt}} Update at: {{.UpdateAt}}
+        </div>
+
+        <ul class="blog-post-tags">
             {{range .Tags}}
-            <a href="https://blog.drshapeless.com/t/{{.}}.html">{{.}}</a>
+            <li>
+                <a href="https://blog.drshapeless.com/tags/{{.}}.html">
+                    <div class="blog-post-tag-item">
+                        {{.}}
+                    </div>
+                </a>
+            </li>
             {{end}}
-        </p>
+        </ul>
         {{.Content}}
     </body>
 </html>

@@ -26,20 +26,36 @@
 
         <div class="content">
             <h3>{{.Tag}}</h3>
-            <table>
+            <ul class="blog-homepage-list">
                 {{range .Posts}}
-                <tr>
-                    <td>{{.CreateAt}}</td>
-                    <td>
-                        <a href="https://blog.drshapeless.com/p/{{.URL}}.html">
-
+                <li class="blog-homepage-list-item">
+                    <a href="https://blog.drshapeless.com/posts/{{.URL}}.html">
+                        <h2 class="blog-homepage-title">
                             {{.Title}}
-
-                        </a>
-                    </td>
-                </tr>
+                        </h2>
+                    </a>
+                    <div class="blog-homepage-metadata">
+                        <ul class="blog-homepage-tags">
+                            {{range .Tags}}
+                            <li>
+                            <a href="https://blog.drshapeless.com/tags/{{.}}.html">
+                                <div class="blog-homepage-tag-item">
+                                    {{.}}
+                                </div>
+                            </a>
+                            </li>
+                            {{end}}
+                        </ul>
+                        <div class="blog-homepage-timestamp">
+                            Create at: {{.CreateAt}} Update at: {{.UpdateAt}}
+                        </div>
+                    </div>
+                    <div class="blog-homepage-preview">
+                        {{.Preview}}
+                    </div>
+                </li>
                 {{end}}
-            </table>
+            </ul>
         </div>
     </body>
 </html>
