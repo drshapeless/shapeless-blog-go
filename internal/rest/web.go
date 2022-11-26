@@ -161,3 +161,25 @@ func (app *Application) showTagWebHandler(w http.ResponseWriter, r *http.Request
 
 	tmpl.Execute(w, body)
 }
+
+func (app *Application) showAllTagsWebHandler(w http.ResponseWriter, r *http.Request) {
+	tags, err := app.Models.Tags.GetAllDistinctTags()
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	var body struct {
+		Tags []string
+	}
+
+	body.Tags = tags
+
+	tmpl := app.TemplateCache["list-tag"]
+	if tmpl == nil {
+		app.emptyTemplateResponse(w, r)
+		return
+	}
+
+	tmpl.Execute(w, body)
+}
