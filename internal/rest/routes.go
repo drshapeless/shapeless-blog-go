@@ -16,6 +16,7 @@ func (app *Application) routes() http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/", app.showHomeWebHandler)
+	r.Get("/list-tags", app.showAllTagsWebHandler)
 	r.Get("/posts/{title}.html", app.showPostWebHandler)
 	r.Get("/tags/{tag}.html", app.showTagWebHandler)
 

@@ -175,7 +175,7 @@ func (app *Application) showAllTagsWebHandler(w http.ResponseWriter, r *http.Req
 
 	body.Tags = tags
 
-	tmpl := app.TemplateCache["list-tag"]
+	tmpl := app.TemplateCache["list-tags"]
 	if tmpl == nil {
 		app.emptyTemplateResponse(w, r)
 		return
