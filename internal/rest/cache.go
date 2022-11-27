@@ -27,6 +27,7 @@ func (app *Application) RefreshTemplateCache() map[string]*template.Template {
 	cache["home"] = app.templateHelper("home")
 	cache["post"] = app.templateHelper("post")
 	cache["tag"] = app.templateHelper("tag")
+	cache["list-tags"] = app.templateHelper("list-tags")
 
 	return cache
 }
