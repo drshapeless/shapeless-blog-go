@@ -49,9 +49,11 @@
                             Create at: {{.CreateAt}} Update at: {{.UpdateAt}}
                         </div>
                     </div>
-                    <div class="blog-homepage-preview">
-                        {{.Preview}}
-                    </div>
+                    <a href="https://blog.drshapeless.com/posts/{{.URL}}.html">
+                        <div class="blog-homepage-preview">
+                            {{.Preview}}
+                        </div>
+                    </a>
                 </li>
                 {{end}}
             </ul>
